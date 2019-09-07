@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.176.2
+FROM jenkins/jenkins:2.176.3
 
 # Install needed/wanted plugins
 COPY plugins.txt /opt
