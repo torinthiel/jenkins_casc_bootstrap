@@ -1,5 +1,8 @@
 FROM jenkins/jenkins:2.190.1
 
+# Disable installer, as configuration will be handled in a different way.
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+
 # Install needed/wanted plugins
 COPY plugins.txt /opt
 RUN /usr/local/bin/install-plugins.sh < /opt/plugins.txt
