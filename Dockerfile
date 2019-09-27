@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.176.3
+FROM jenkins/jenkins:2.190.1
 
 # Install needed/wanted plugins
 COPY plugins.txt /opt
@@ -8,10 +8,6 @@ RUN /usr/local/bin/install-plugins.sh < /opt/plugins.txt
 # Everything from there will be copied to $JENKINS_HOME, without overwriting
 # unless the file name ends in .override
 # REF_INIT is the reference location for init hooks
-# As of version 2.176.2 this needs to be below install-plugins, as it breaks
-# it. Most probably the next version will work with this above, or maybe even
-# not there at all.
-ARG REF=/usr/share/jenkins/ref/
 ARG REF_INIT=${REF}/init.groovy.d/
 
 # Jenkins startup will copy it from here to $JENKINS_HOME, dropping the
