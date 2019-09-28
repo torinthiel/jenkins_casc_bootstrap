@@ -63,6 +63,7 @@ structs:1.20
 subversion:2.12.2
 timestamper:1.10
 token-macro:2.8
+trilead-api:1.0.5
 workflow-aggregator:2.6
 workflow-api:2.37
 workflow-basic-steps:2.18
