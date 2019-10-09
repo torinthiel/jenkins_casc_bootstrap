@@ -30,7 +30,9 @@ EOF
 ./command.sh secrets enable -path=secret kv-v2
 
 # Configure some test data
-./command.sh kv put secret/jenkins/config key=value path=somewhere
+KEY="/dev/null"
+test -f jenkins_test && KEY="jenkins_test"
+cat $KEY | ./command.sh kv put secret/jenkins/config key=value path=somewhere sshKey=-
 
 # Revoke the root token after the initial configuration
 ./command.sh token revoke $VAULT_TOKEN
