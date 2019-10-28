@@ -24,6 +24,7 @@ github-api:1.95
 github-branch-source:2.5.8
 github:1.29.5
 gradle:1.34
+groovy:2.2
 handlebars:1.1.1
 hashicorp-vault-plugin:3.0.0
 jackson2-api:2.10.0
