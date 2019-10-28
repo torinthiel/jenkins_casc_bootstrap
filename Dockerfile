@@ -1,3 +1,18 @@
+# As the source files are split, we need a second image to combine them into a single script
+FROM alpine:latest AS builder
+
+# Prepare work directory
+RUN mkdir -p /tmp/configuration_as_code/src
+WORKDIR /tmp/configuration_as_code
+
+# Copy sources
+COPY ConfigurationAsCodeBootstrap.footer.groovy .
+COPY src/main/groovy/*.groovy src/
+
+# Combine into final script
+RUN cat src/* ConfigurationAsCodeBootstrap.footer.groovy > ConfigurationAsCodeBootstrap.groovy
+
+
 FROM jenkins/jenkins:2.190.1
 
 # Disable installer, as configuration will be handled in a different way.
@@ -17,4 +32,5 @@ ARG REF_INIT=${REF}/init.groovy.d/
 # .override part. As this is a part of image, not something user-configurable,
 # we want it to be taken from image on every restart, as this makes upgrade
 # work.
-COPY ConfigurationAsCodeBootstrap.groovy ${REF_INIT}/ConfigurationAsCodeBootstrap.groovy.override
+COPY --from=builder /tmp/configuration_as_code/ConfigurationAsCodeBootstrap.groovy \
+	${REF_INIT}/ConfigurationAsCodeBootstrap.groovy.override
