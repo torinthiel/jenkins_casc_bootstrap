@@ -40,7 +40,7 @@ running instance.
 
 This process ensures that
 a) There are no configuration parts present in the image, everything comes in
-   (directy oe indirectly) via environment variables.
+   (directly or indirectly) via environment variables.
 b) The configuration process is repeatable - user can re-run the configuration
    job to revert to stored configuration, or periodically
 c) The configuration is modular, that is an organization can have global
