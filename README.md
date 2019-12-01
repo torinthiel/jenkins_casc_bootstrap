@@ -45,3 +45,12 @@ b) The configuration process is repeatable - user can re-run the configuration
    job to revert to stored configuration, or periodically
 c) The configuration is modular, that is an organization can have global
    configuration for all it's instances, with some more specific overrides.
+
+Building
+--------
+
+Simply use the provided `./build.sh` script or use plain `docker build .` command to create the image.
+You can customize `plugins.txt` beforehand to provide the plugins you need.
+
+Run maven build to run tests for the functionality, the resulting maven
+artifact is not used anywhere and needs not be published.

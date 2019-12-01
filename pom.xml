@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>pl.torinthiel.jenkins</groupId>
+	<artifactId>jenkins-configuration-as-code-bootstrap</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Jenkins Configuration-as-Code Bootstrap</name>
+	<description>
+	  The maven project is only to facilitate running tests.
+	</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.groovy.compiler>3.5.0-01</version.groovy.compiler>
+		<version.groovy.batch>2.5.8-02</version.groovy.batch>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jenkins-ci.main</groupId>
+			<artifactId>jenkins-core</artifactId>
+			<version>2.190.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>credentials</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>ssh-credentials</artifactId>
+			<version>1.18</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bettercloud</groupId>
+			<artifactId>vault-java-driver</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.5.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<compilerId>groovy-eclipse-compiler</compilerId>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-compiler</artifactId>
+						<version>${version.groovy.compiler}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-batch</artifactId>
+						<version>${version.groovy.batch}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-eclipse-compiler</artifactId>
+				<version>${version.groovy.compiler}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M3</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
