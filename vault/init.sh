@@ -11,6 +11,8 @@ VAULT_TOKEN=`echo "$INIT_OUTPUT" | grep '^Initial Root Token' | cut -d: -f2`
 UNSEAL_KEY=`echo "$INIT_OUTPUT" | grep '^Unseal Key' | cut -d: -f2`
 # Store the unseal key for future uses
 echo "UNSEAL_KEY=$UNSEAL_KEY" > .unseal.env
+# Export token for use with further commands
+export VAULT_TOKEN
 
 # Unseal the instance
 ./unseal.sh
