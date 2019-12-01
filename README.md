@@ -46,6 +46,30 @@ b) The configuration process is repeatable - user can re-run the configuration
 c) The configuration is modular, that is an organization can have global
    configuration for all it's instances, with some more specific overrides.
 
+Configuration
+-------------
+
+The following configuration variables are supported
+
+* CASCB_VAULT_URL - The URL to Vault server
+* CASCB_VAULT_USER - The username used to login
+* CASCB_VAULT_PW - The password used to login
+* CASCB_VAULT_FILE - Path to properties file that will be scanned for above variables
+
+Each of the variables is supported with either `CASCB_` prefix as indicated in
+the above list or with `CASC_` prefix used also by the Configuration-as-Code
+plugin. If the `CASCB_VAULT_FILE` or `CASC_VAULT_FILE` variable is present the
+file it points at will be scanned for the same variables. The file indicated by
+`CASCB_VAULT_FILE` is scanned only for variables with `CASCB_` prefix.
+
+In case a variable is present in several places the following precedence
+applies, from least important:
+* _CASC_-prefixed variable in `CASC_VAULT_FILE`
+* _CASCB_-prefixed variable in `CASC_VAULT_FILE`
+* _CASC_-prefixed variable in environment
+* _CASCB_-prefixed variable in `CASCB_VAULT_FILE`
+* _CASCB_-prefixed variable in environment
+
 Building
 --------
 

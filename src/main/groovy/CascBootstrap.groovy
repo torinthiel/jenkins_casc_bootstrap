@@ -7,7 +7,9 @@ public class CascBootstrap {
 	Logger log = Logger.getLogger(getClass().name)
 
 	public main() {
-		VaultAccessor accessor = new VaultAccessor();
+		def config = new ConfigRetriever()
+
+		VaultAccessor accessor = new VaultAccessor(config)
 
 		String value = accessor.getValue("path")
 		log.log(INFO, "Retrieved from vault: " + value);

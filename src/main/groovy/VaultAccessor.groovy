@@ -1,18 +1,22 @@
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
+import static Configs.*
 
 class VaultAccessor {
 	Vault vault;
 
-	VaultAccessor() {
+	VaultAccessor(ConfigRetriever configVars) {
+		String vaultUrl = configVars.get(VAULT_URL).orElseThrow({new IllegalArgumentException("CASCB_VAULT_URL not provided")})
 		VaultConfig config = new VaultConfig()
-		.address("http://172.17.0.3:8200")
-		.build();
+			.address(vaultUrl)
+			.build();
 
 		vault = new Vault(config);
 
 		// Authenticate
-		String token = vault.auth().loginByUserPass("jenkins", "S3cRet", "userpass").getAuthClientToken();
+		String user = configVars.get(VAULT_USER).get()
+		String pass = configVars.get(VAULT_PW).get()
+		String token = vault.auth().loginByUserPass(user, pass, "userpass").getAuthClientToken();
 		config.token(token).build();
 	}
 
