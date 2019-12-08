@@ -16,5 +16,8 @@ public class CascBootstrap {
 
 		CredentialUpdater updater = new CredentialUpdater(Jenkins.instance)
 		updater.updateCredentials("ssh-key", "git", accessor.getValue("sshKey"))
+
+		ConfigJobCreator creator = new ConfigJobCreator()
+		creator.generateJobs()
 	}
 }
