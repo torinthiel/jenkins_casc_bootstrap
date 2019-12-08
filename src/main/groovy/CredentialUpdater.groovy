@@ -13,7 +13,7 @@ class CredentialUpdater {
 	}
 
 	void updateCredentials(String id, String user, String privateKey) {
-		SystemCredentialsProvider plugin = instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0]
+		SystemCredentialsProvider plugin = instance.getExtensionList(SystemCredentialsProvider.class)[0]
 		def store = plugin.getStore()
 		def globalDomain = Domain.global()
 		def newKey = new BasicSSHUserPrivateKey(
