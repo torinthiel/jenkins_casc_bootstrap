@@ -8,7 +8,7 @@ class ConfigJobCreator {
 	// Because of this, the ''' inside this string have to be escaped
 	// or use """, but each $ inside needs to be escaped by double-backslash.
 	private static final String JOB_DSL_SCRIPT = '''\
-		job('config') {
+		def configJob = job('config') {
 			label('master')
 			scm {
 				git {
@@ -37,6 +37,7 @@ class ConfigJobCreator {
 				""".stripIndent())
 			}
 		}
+		queue(configJob)
 	'''.stripIndent()
 
 	public generateJobs() {
