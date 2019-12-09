@@ -22,6 +22,10 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 COPY plugins.txt /opt
 RUN /usr/local/bin/install-plugins.sh < /opt/plugins.txt
 
+# A stripped-down version of apprived script list, ment to pre-approve the
+# script used by the configuration job.
+COPY scriptApproval.xml ${REF}
+
 # REF is a standard Jenkins location serving as a reference for $JENKINS_HOME
 # Everything from there will be copied to $JENKINS_HOME, without overwriting
 # unless the file name ends in .override
