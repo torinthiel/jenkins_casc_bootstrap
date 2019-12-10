@@ -10,6 +10,7 @@ public class CascBootstrap {
 		def config = new ConfigRetriever()
 
 		VaultAccessor accessor = new VaultAccessor(config)
+		accessor.configureVault()
 
 		String value = accessor.getValue("path")
 		log.log(INFO, "Retrieved from vault: " + value);
