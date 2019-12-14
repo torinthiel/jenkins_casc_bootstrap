@@ -33,9 +33,9 @@ class ConfigJobCreator {
 					cp *.yaml \$TARGET_DIR
 				'''.stripIndent())
 				systemGroovyCommand('''\\
-					import jenkins.model.Jenkins
-					def jcacPlugin = Jenkins.instance.getExtensionList(io.jenkins.plugins.casc.ConfigurationAsCode.class).first()
-					jcacPlugin.configure("/var/jenkins_home/$CONFIG_SUBDIR")
+					def jenkins = jenkins.model.Jenkins.get()
+					def jcacPlugin = jenkins.getExtensionList(io.jenkins.plugins.casc.ConfigurationAsCode.class).first()
+					jcacPlugin.configure("\${jenkins.rootDir}/$CONFIG_SUBDIR")
 				'''.stripIndent())
 			}
 		}
