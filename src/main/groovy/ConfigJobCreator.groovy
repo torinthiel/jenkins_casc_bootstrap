@@ -2,6 +2,8 @@ import javaposse.jobdsl.dsl.DslScriptLoader
 import javaposse.jobdsl.plugin.JenkinsJobManagement
 
 class ConfigJobCreator {
+	private static final String CONFIG_SUBDIR="jenkins_casc_configuration"
+
 	// Note that this script is interpreted TWICE by groovy:
 	// Once when the class is parsed, second time when the script
 	// is passed to DslScriptLoader and executed.
@@ -25,7 +27,7 @@ class ConfigJobCreator {
 
 			steps {
 				shell('''\\
-					TARGET_DIR=\$JENKINS_HOME/jenkins_casc_configuration
+					TARGET_DIR=\$JENKINS_HOME/$CONFIG_SUBDIR
 
 					mkdir -p \$TARGET_DIR
 					cp *.yaml \$TARGET_DIR
@@ -33,7 +35,7 @@ class ConfigJobCreator {
 				systemGroovyCommand('''\\
 					import jenkins.model.Jenkins
 					def jcacPlugin = Jenkins.instance.getExtensionList(io.jenkins.plugins.casc.ConfigurationAsCode.class).first()
-					jcacPlugin.configure("/var/jenkins_home/jenkins_casc_configuration")
+					jcacPlugin.configure("/var/jenkins_home/$CONFIG_SUBDIR")
 				'''.stripIndent())
 			}
 		}
