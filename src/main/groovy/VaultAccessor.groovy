@@ -4,6 +4,14 @@ import static Configs.*
 
 import java.util.function.Function
 
+enum VaultConfigKey {
+	SSH_KEY
+
+	String getPath() {
+		return "cascb_" + toString().toLowerCase()
+	}
+}
+
 class VaultAccessor {
 	Vault vault
 	ConfigRetriever configVars
@@ -29,9 +37,9 @@ class VaultAccessor {
 		config.token(token).build()
 	}
 
-	String getValue(String key) {
+	String getValue(VaultConfigKey key) {
 		def data = vault.logical().read("secret/jenkins/config").getData()
 
-		return data.get(key)
+		return data.get(key.path)
 	}
 }

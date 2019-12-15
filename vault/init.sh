@@ -34,7 +34,7 @@ EOF
 # Configure some test data
 KEY="/dev/null"
 test -f jenkins_test && KEY="jenkins_test"
-cat $KEY | ./command.sh kv put secret/jenkins/config key=value path=somewhere sshKey=-
+cat $KEY | ./command.sh kv put secret/jenkins/config cascb_ssh_key=-
 
 # Revoke the root token after the initial configuration
 ./command.sh token revoke $VAULT_TOKEN

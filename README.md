@@ -49,7 +49,7 @@ c) The configuration is modular, that is an organization can have global
 Configuration
 -------------
 
-The following configuration variables are supported
+The following configuration variables are supported:
 
 * CASCB_VAULT_URL - The URL to Vault server
 * CASCB_VAULT_USER - The username used to login
@@ -69,6 +69,10 @@ applies, from least important:
 * _CASC_-prefixed variable in environment
 * _CASCB_-prefixed variable in `CASCB_VAULT_FILE`
 * _CASCB_-prefixed variable in environment
+
+The following values are retrieved from Vault:
+
+* cascb_ssh_key - the SSH key used to connect to repository with configuration
 
 Building
 --------

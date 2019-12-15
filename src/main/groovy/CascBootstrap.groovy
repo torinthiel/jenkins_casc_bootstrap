@@ -11,14 +11,14 @@ public class CascBootstrap {
 
 		VaultAccessor accessor = new VaultAccessor(config)
 		accessor.configureVault()
-
-		String value = accessor.getValue("path")
-		log.log(INFO, "Retrieved from vault: " + value);
+		log.log(INFO, "Connected to vault")
 
 		CredentialUpdater updater = new CredentialUpdater(Jenkins.instance)
-		updater.updateCredentials("ssh-key", "git", accessor.getValue("sshKey"))
+		updater.updateCredentials("ssh-key", "git", accessor.getValue(VaultConfigKey.SSH_KEY))
+		log.log(INFO, "Configured credentials")
 
 		ConfigJobCreator creator = new ConfigJobCreator()
 		creator.generateJobs()
+		log.log(INFO, "Created configuration job")
 	}
 }
