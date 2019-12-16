@@ -14,11 +14,17 @@ enum VaultConfigKey {
 }
 
 class VaultAccessor {
+	Function<VaultConfig, Vault> vaultFactory
 	Vault vault
-	ConfigRetriever configVars
+	Retriever configVars
 
-	VaultAccessor(ConfigRetriever configVars) {
+	VaultAccessor(Retriever configVars) {
+		this(configVars, new DefaultVaultFactory())
+	}
+
+	VaultAccessor(Retriever configVars, Function<VaultConfig, Vault> vaultFactory) {
 		this.configVars = configVars
+		this.vaultFactory = vaultFactory
 	}
 
 	void configureVault() {
@@ -27,7 +33,7 @@ class VaultAccessor {
 			.address(vaultUrl)
 			.build()
 
-		vault = new Vault(config)
+		vault = vaultFactory.apply(config)
 		authenticate(config)
 	}
 
@@ -42,5 +48,12 @@ class VaultAccessor {
 		def data = vault.logical().read("secret/jenkins/config").getData()
 
 		return data.get(key.path)
+	}
+}
+
+class DefaultVaultFactory implements Function<VaultConfig, Vault> {
+	@Override
+	public Vault apply(VaultConfig config) {
+		return new Vault(config);
 	}
 }
