@@ -72,7 +72,7 @@ class SmokeIT {
 			.withStrategy(forLogMessage(".*config #[0-9]+ main build action completed: SUCCESS.*", 1))
 			;
 
-		jenkins = new GenericContainer<>("torinthiel/jenkins-bootstrap")
+		jenkins = new GenericContainer<>(new ImageFromDockerfile().withDockerfile(Paths.get("Dockerfile").toAbsolutePath()))
 				.withNetwork(net)
 				.withLogConsumer(new Slf4jLogConsumer(log))
 				.waitingFor(combined)
