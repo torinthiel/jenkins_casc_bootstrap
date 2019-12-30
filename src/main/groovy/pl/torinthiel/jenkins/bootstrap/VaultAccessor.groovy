@@ -31,7 +31,7 @@ class VaultAccessor {
 	}
 
 	void configureVault() {
-		String vaultUrl = configVars.get(VAULT_URL).orElseThrow({new IllegalArgumentException("CASCB_VAULT_URL not provided")})
+		String vaultUrl = getOrThrow(VAULT_URL)
 		VaultConfig config = new VaultConfig()
 			.address(vaultUrl)
 			.build()
@@ -49,8 +49,13 @@ class VaultAccessor {
 	}
 
 	void readVariables(VaultConfig config) {
-		def data = vault.logical().read("secret/jenkins/config").getData()
+		def path = getOrThrow(VAULT_PATHS)
+		def data = vault.logical().read(path).getData()
 		values.putAll(data)
+	}
+
+	private String getOrThrow(Configs configName) {
+		return configVars.get(configName).orElseThrow({new IllegalArgumentException("CASCB_${configName} not provided")})
 	}
 
 	String getValue(VaultConfigKey key) {

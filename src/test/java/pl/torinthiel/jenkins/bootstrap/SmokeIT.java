@@ -80,6 +80,7 @@ class SmokeIT {
 				.withEnv("CASCB_VAULT_URL", "http://vault:8200/")
 				.withEnv("CASCB_VAULT_USER", "jenkins")
 				.withEnv("CASCB_VAULT_PW", "S3cRet")
+				.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config")
 				.withExposedPorts(JENKINS_PORT);
 	}
 

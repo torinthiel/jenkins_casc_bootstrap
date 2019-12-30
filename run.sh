@@ -7,4 +7,5 @@ docker run -ti \
 	-e CASCB_VAULT_URL=http://172.17.0.2:8200 \
 	-e CASCB_VAULT_USER=jenkins \
 	-e CASCB_VAULT_PW=S3cRet \
+	-e CASCB_VAULT_PATHS=secret/jenkins/config \
 	torinthiel/jenkins-bootstrap

@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,6 +39,7 @@ public class VaultAccessorTest {
 		config.addMapping(Configs.VAULT_URL, "random_url");
 		config.addMapping(Configs.VAULT_USER, "username");
 		config.addMapping(Configs.VAULT_PW, "password");
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config");
 	}
 
 	@Test
@@ -75,6 +78,33 @@ public class VaultAccessorTest {
 		verify(vault.logical(), times(2)).read("secret/jenkins/config");
 	}
 
+	@Test
+	void shouldReadVaultPathFromEnv() throws VaultException {
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("cascb_ssh_key", "Wrong value");
+		Map<String, String> resultsMap = new HashMap<>();
+		resultsMap.put("cascb_ssh_key", "Correct value");
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(errorMap);
+		when(vault.logical().read("secret/jenkins/correct").getData()).thenReturn(resultsMap);
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/correct");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
+		assertEquals("Correct value", retVal);
+	}
+
+	@Test
+	void shouldThrowErrorWhenRequiredParamMissing() {
+		config.removeMapping(Configs.VAULT_URL);
+
+		Assertions.assertThrows(IllegalArgumentException.class, (Executable) () -> {
+			VaultAccessor acc = new VaultAccessor(config, factory);
+			acc.configureVault();
+			}, "CASCB_VAULT_URL is not provided"
+		);
+	}
 }
 
 class MockConfigVars implements Retriever {
@@ -87,5 +117,9 @@ class MockConfigVars implements Retriever {
 
 	public void addMapping(Configs key, String value) {
 		config.put(key, value);
+	}
+
+	public void removeMapping(Configs key) {
+		config.remove(key);
 	}
 }

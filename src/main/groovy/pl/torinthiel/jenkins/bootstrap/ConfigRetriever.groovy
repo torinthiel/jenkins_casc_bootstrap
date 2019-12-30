@@ -8,6 +8,7 @@ enum Configs {
 	VAULT_URL,
 	VAULT_USER,
 	VAULT_PW,
+	VAULT_PATHS,
 	VAULT_FILE
 }
 
