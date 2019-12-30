@@ -13,7 +13,7 @@ COPY src/main/groovy/*.groovy src/
 RUN cat src/* ConfigurationAsCodeBootstrap.footer.groovy > ConfigurationAsCodeBootstrap.groovy
 
 
-FROM jenkins/jenkins:2.190.1
+FROM jenkins/jenkins:2.204.1
 
 # Disable installer, as configuration will be handled in a different way.
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
