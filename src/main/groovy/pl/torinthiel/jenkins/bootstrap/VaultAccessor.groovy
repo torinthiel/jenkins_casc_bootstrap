@@ -49,9 +49,8 @@ class VaultAccessor {
 	}
 
 	void readVariables(VaultConfig config) {
-		def path = getOrThrow(VAULT_PATHS)
-		def data = vault.logical().read(path).getData()
-		values.putAll(data)
+		def paths = getOrThrow(VAULT_PATHS).split(",")
+		paths.collect{vault.logical().read(it).getData()}.each(values.&putAll)
 	}
 
 	private String getOrThrow(Configs configName) {

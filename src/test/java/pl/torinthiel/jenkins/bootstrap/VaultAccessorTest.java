@@ -105,6 +105,42 @@ public class VaultAccessorTest {
 			}, "CASCB_VAULT_URL is not provided"
 		);
 	}
+
+	@Test
+	void shouldReadFromMultiplePaths() throws VaultException {
+		Map<String, String> firstMap = new HashMap<>();
+		firstMap.put("cascb_ssh_key", "First value");
+		Map<String, String> secondsMap = new HashMap<>();
+		secondsMap.put("cascb_repo_url", "Second value");
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(firstMap);
+		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondsMap);
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
+		assertEquals("First value", firstVal);
+		String secondVal = acc.getValue(VaultConfigKey.REPO_URL);
+		assertEquals("Second value", secondVal);
+	}
+
+	@Test
+	void ifValueIsProvidedInTwoPathsLatterTakesPrecedence() throws VaultException {
+		Map<String, String> firstMap = new HashMap<>();
+		firstMap.put("cascb_ssh_key", "First value");
+		Map<String, String> secondsMap = new HashMap<>();
+		secondsMap.put("cascb_ssh_key", "Second value");
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(firstMap);
+		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondsMap);
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
+		assertEquals("Second value", firstVal);
+	}
 }
 
 class MockConfigVars implements Retriever {
