@@ -1,8 +1,5 @@
 package pl.torinthiel.jenkins.bootstrap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class VaultAccessorTest {
@@ -54,6 +56,23 @@ public class VaultAccessorTest {
 
 		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
 		assertEquals("A_long_ssh_key", retVal);
+	}
+
+	@Test
+	void shouldNotAskTwiceForValue() throws VaultException {
+		Map<String, String> resultsMap = new HashMap<>();
+		resultsMap.put("cascb_ssh_key", "A_long_ssh_key");
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(resultsMap);
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
+		String retVal2 = acc.getValue(VaultConfigKey.SSH_KEY);
+		assertEquals("A_long_ssh_key", retVal);
+		assertEquals("A_long_ssh_key", retVal2);
+		// Expect one call from when() above and second one from unit under test.
+		verify(vault.logical(), times(2)).read("secret/jenkins/config");
 	}
 
 }

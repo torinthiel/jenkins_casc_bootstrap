@@ -19,6 +19,7 @@ class VaultAccessor {
 	Function<VaultConfig, Vault> vaultFactory
 	Vault vault
 	Retriever configVars
+	Map<String, String> values = new HashMap<>()
 
 	VaultAccessor(Retriever configVars) {
 		this(configVars, new DefaultVaultFactory())
@@ -37,6 +38,7 @@ class VaultAccessor {
 
 		vault = vaultFactory.apply(config)
 		authenticate(config)
+		readVariables(config)
 	}
 
 	void authenticate(VaultConfig config) {
@@ -46,10 +48,13 @@ class VaultAccessor {
 		config.token(token).build()
 	}
 
-	String getValue(VaultConfigKey key) {
+	void readVariables(VaultConfig config) {
 		def data = vault.logical().read("secret/jenkins/config").getData()
+		values.putAll(data)
+	}
 
-		return data.get(key.path)
+	String getValue(VaultConfigKey key) {
+		return values.get(key.path)
 	}
 }
 
