@@ -1,3 +1,5 @@
+package pl.torinthiel.jenkins.bootstrap
+
 import static java.util.logging.Level.INFO
 
 import java.util.logging.Logger;

@@ -1,3 +1,5 @@
+package pl.torinthiel.jenkins.bootstrap
+
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey
 import com.cloudbees.plugins.credentials.CredentialsScope
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider

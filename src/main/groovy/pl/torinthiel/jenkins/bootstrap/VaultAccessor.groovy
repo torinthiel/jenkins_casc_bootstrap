@@ -1,3 +1,5 @@
+package pl.torinthiel.jenkins.bootstrap
+
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
 import static Configs.*

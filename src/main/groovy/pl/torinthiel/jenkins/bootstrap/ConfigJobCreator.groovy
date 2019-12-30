@@ -1,3 +1,5 @@
+package pl.torinthiel.jenkins.bootstrap
+
 import javaposse.jobdsl.dsl.DslScriptLoader
 import javaposse.jobdsl.plugin.JenkinsJobManagement
 

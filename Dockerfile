@@ -7,10 +7,10 @@ WORKDIR /tmp/configuration_as_code
 
 # Copy sources
 COPY ConfigurationAsCodeBootstrap.footer.groovy .
-COPY src/main/groovy/*.groovy src/
+COPY src/main/groovy/pl/torinthiel/jenkins/bootstrap/*.groovy src/
 
 # Combine into final script
-RUN cat src/* ConfigurationAsCodeBootstrap.footer.groovy > ConfigurationAsCodeBootstrap.groovy
+RUN sed -e '/^package /d' src/* ConfigurationAsCodeBootstrap.footer.groovy > ConfigurationAsCodeBootstrap.groovy
 
 
 FROM jenkins/jenkins:2.204.1

@@ -1,3 +1,5 @@
+package pl.torinthiel.jenkins.bootstrap
+
 import java.util.function.Function
 import java.util.stream.Stream
 
