@@ -23,12 +23,19 @@ Secrets downloaded from HashiCorp Vault.
 Multiple configuration pieces possible, with user-defined priority, so it's
 possible to have several Jenkins instances that share a lot of configuration.
 
+Possible uses:
+
+* Cloning Jenkins instance with overriding e.g. notifications and agents,
+  for testing upgrades
+* Several instances sharing some parts of common configuration, while having
+  different tweaks in every configuration.
+
 
 Flow
 ----
 
 On startup, the bootstrap script connects to Vault. The Vault's URL,
-credentials and path within the vault are provided via environment
+credentials and path within the Vault are provided via environment
 variables/files, e.g. using [Docker
 secrets](https://docs.docker.com/engine/swarm/secrets/). From there the scripts
 get the SSH keys that are preconfigured into Jenkins as a Credential, and a
