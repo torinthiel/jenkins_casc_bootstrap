@@ -51,7 +51,7 @@ class ConfigJobCreator {
 	}
 
 	def getRepoPath() {
-		return accessor.getValue(VaultConfigKey.REPO_URL)
+		accessor.getValue(VaultConfigKey.REPO_URL)
 	}
 
 	public generateJobs() {

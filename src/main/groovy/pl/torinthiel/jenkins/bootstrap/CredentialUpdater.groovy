@@ -8,7 +8,7 @@ import com.cloudbees.plugins.credentials.domains.Domain
 import jenkins.model.Jenkins;
 
 class CredentialUpdater {
-	Jenkins instance;
+	Jenkins instance
 
 	CredentialUpdater(Jenkins instance) {
 		this.instance = instance
@@ -25,9 +25,9 @@ class CredentialUpdater {
 				new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(privateKey),
 				"",
 				"Description"
-		);
+		)
 
-		def existing = store.getCredentials(globalDomain).find{it.id =="ssh-key"}
+		def existing = store.getCredentials(globalDomain).find{it.id == "ssh-key"}
 
 		if (existing != null)
 			store.updateCredentials(globalDomain, existing, newKey)

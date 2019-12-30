@@ -1,7 +1,6 @@
 package pl.torinthiel.jenkins.bootstrap
 
 import java.util.function.Function
-import java.util.stream.Stream
 
 
 enum Configs {
@@ -24,7 +23,7 @@ class EnvNameMapper {
 	}
 
 	String map(Configs configName) {
-		return prefix + configName.toString()
+		prefix + configName.toString()
 	}
 }
 
@@ -61,13 +60,13 @@ class FileRetriever implements Retriever {
 	}
 
 	Optional<String> get(Configs configName) {
-		return Optional.ofNullable(values.getProperty(mapper.map(configName)))
+		Optional.ofNullable(values[mapper.map(configName)])
 	}
 }
 
 class ConfigRetriever implements Retriever {
 
-	private final Retriever[] partials
+	private final List<Retriever> partials
 	private final Function<String, String> env
 
 	ConfigRetriever() {
@@ -82,26 +81,25 @@ class ConfigRetriever implements Retriever {
 		def bootstrapEnv = new EnvRetriever(bootstrapMapper, env)
 		def cascEnv = new EnvRetriever(cascMapper, env)
 		parts.add(bootstrapEnv)
-		fileRetriever(bootstrapEnv, bootstrapMapper).ifPresent({parts.add(it)})
+		fileRetriever(bootstrapEnv, bootstrapMapper).ifPresent(parts.&add)
 		parts.add(cascEnv)
-		fileRetriever(cascEnv, bootstrapMapper).ifPresent({parts.add(it)})
-		fileRetriever(cascEnv, cascMapper).ifPresent({parts.add(it)})
-		partials = parts.toArray();
+		fileRetriever(cascEnv, bootstrapMapper).ifPresent(parts.&add)
+		fileRetriever(cascEnv, cascMapper).ifPresent(parts.&add)
+		partials = parts
 	}
 
 	Optional<String> get(Configs configName) {
-		return Stream.of(partials).map({it.get(configName)}).filter({it.isPresent()}).findFirst().map({it.get()})
+		partials.collect{it.get(configName)}.find{it.isPresent()} ?: Optional.empty()
 	}
 
 	static private Optional<Retriever> fileRetriever(Retriever pathGetter, EnvNameMapper mapper) {
-		Optional<String> maybePath = pathGetter.get(Configs.VAULT_FILE).filter({new File(it).exists()})
-		return maybePath.map({new FileRetriever(mapper, it)})
+		pathGetter.get(Configs.VAULT_FILE).filter{new File(it).exists()}.map{new FileRetriever(mapper, it)}
 	}
 }
 
 class DefaultEnvRetriever implements Function<String, String> {
 	@Override
 	public String apply(String t) {
-		return System.getenv(t)
+		System.getenv(t)
 	}
 }

@@ -54,17 +54,17 @@ class VaultAccessor {
 	}
 
 	private String getOrThrow(Configs configName) {
-		return configVars.get(configName).orElseThrow({new IllegalArgumentException("CASCB_${configName} not provided")})
+		configVars.get(configName).orElseThrow({new IllegalArgumentException("CASCB_${configName} not provided")})
 	}
 
 	String getValue(VaultConfigKey key) {
-		return values.get(key.path)
+		values.get(key.path)
 	}
 }
 
 class DefaultVaultFactory implements Function<VaultConfig, Vault> {
 	@Override
 	public Vault apply(VaultConfig config) {
-		return new Vault(config);
+		new Vault(config);
 	}
 }
