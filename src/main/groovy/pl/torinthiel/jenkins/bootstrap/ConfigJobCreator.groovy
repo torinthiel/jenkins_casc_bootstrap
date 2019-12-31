@@ -44,7 +44,7 @@ class ConfigJobCreator {
 		queue(configJob)
 	"""
 
-	VaultAccessor accessor
+	private VaultAccessor accessor
 
 	ConfigJobCreator(VaultAccessor accessor) {
 		this.accessor = accessor

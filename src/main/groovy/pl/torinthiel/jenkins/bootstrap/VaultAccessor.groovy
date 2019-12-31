@@ -16,10 +16,10 @@ enum VaultConfigKey {
 }
 
 class VaultAccessor {
-	Function<VaultConfig, Vault> vaultFactory
-	Vault vault
-	Retriever configVars
-	Map<String, String> values = new HashMap<>()
+	private Function<VaultConfig, Vault> vaultFactory
+	private Vault vault
+	private Retriever configVars
+	private Map<String, String> values = new HashMap<>()
 
 	VaultAccessor(Retriever configVars) {
 		this(configVars, new DefaultVaultFactory())

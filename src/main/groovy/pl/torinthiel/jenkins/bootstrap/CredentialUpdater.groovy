@@ -8,7 +8,7 @@ import com.cloudbees.plugins.credentials.domains.Domain
 import jenkins.model.Jenkins;
 
 class CredentialUpdater {
-	Jenkins instance
+	private Jenkins instance
 
 	CredentialUpdater(Jenkins instance) {
 		this.instance = instance

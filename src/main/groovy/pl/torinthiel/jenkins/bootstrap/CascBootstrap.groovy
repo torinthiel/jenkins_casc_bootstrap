@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 
 public class CascBootstrap {
-	Logger log = Logger.getLogger(getClass().name)
+	private Logger log = Logger.getLogger(getClass().name)
 
 	public main() {
 		def config = new ConfigRetriever()
