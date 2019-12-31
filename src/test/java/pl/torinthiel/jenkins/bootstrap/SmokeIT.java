@@ -58,8 +58,7 @@ class SmokeIT {
 			.withKvAndStdin("secret/jenkins/config",
 					MountableFile.forClasspathResource("itest/test_key_rsa"),
 					"cascb_ssh_key=-",
-					"cascb_repo_url=ssh://git/~/repo",
-					"cascb_repo_branch=experiments")
+					"cascb_repo_url=ssh://git/~/repo")
 			.withKv("secret/jenkins/branch_config",
 					"cascb_repo_branch=other_branch")
 			.withNetwork(net)

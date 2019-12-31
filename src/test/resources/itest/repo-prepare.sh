@@ -11,6 +11,18 @@ create_branch_from_dir() {
 	git commit -m"$3"
 }
 
+# Adds a new commit to specified branch, with contents added from specified directory
+# $1 - branch name
+# $2 - directory with files for the commit
+# $3 - commit message
+add_files_from_dir() {
+	git checkout $1
+	cp -r $2/* .
+	git add .
+	git commit -m"$3"
+}
+
+
 git init
 
 cat > README <<EOF
@@ -21,7 +33,7 @@ EOF
 git add .
 git commit -m'Initial commit, readme'
 
-create_branch_from_dir experiments ../repository-contents/experiments "Basic smoke test"
+add_files_from_dir master ../repository-contents/master "Basic smoke test"
 create_branch_from_dir other_branch ../repository-contents/other_branch "Different branch test"
 
 git checkout master
