@@ -36,6 +36,8 @@ class SmokeIT {
 	private static final int VAULT_PORT = 8200;
 	private static final int JENKINS_PORT = 8080;
 
+	private static final String CRUMB_URL_PATTERN = "http://%s:%d/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)";
+
 	private static final Network net = newNetwork();
 	private static final Path dockerFile = Paths
 			.get(Thread.currentThread().getContextClassLoader().getResource(DOCKERFILE).getFile());
@@ -90,12 +92,17 @@ class SmokeIT {
 		assertUserExists("admin", "password");
 	}
 
-
 	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {
-		URL crumbUrl = new URL("http://" + jenkins.getContainerIpAddress() + ":" + jenkins.getFirstMappedPort() + "/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)");
+		HttpURLConnection conn = getCrumbConnection(user, password);
+		Assertions.assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
+	}
+
+	private HttpURLConnection getCrumbConnection(String user, String password)
+			throws MalformedURLException, IOException {
+		URL crumbUrl = new URL(String.format(CRUMB_URL_PATTERN, jenkins.getContainerIpAddress(), jenkins.getFirstMappedPort()));
 		HttpURLConnection conn = (HttpURLConnection) crumbUrl.openConnection();
 		addBasicAuth(user, password, conn);
-		Assertions.assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
+		return conn;
 	}
 
 	private void addBasicAuth(String user, String password, HttpURLConnection conn) {
