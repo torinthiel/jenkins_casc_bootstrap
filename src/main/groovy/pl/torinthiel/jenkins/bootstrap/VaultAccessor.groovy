@@ -8,14 +8,28 @@ import java.util.function.Function
 
 enum VaultConfigKey {
 	REPO_URL,
-	REPO_BRANCH,
+	REPO_BRANCH('master'),
 	SSH_USER,
-	SSH_DESCRIPTION,
-	SSH_ID,
+	SSH_DESCRIPTION(''),
+	SSH_ID('ssh-key'),
 	SSH_KEY
+
+	final Optional<String> defaultValue;
+
+	VaultConfigKey() {
+		this(null)
+	}
+
+	VaultConfigKey(String defaultValue) {
+		this.defaultValue = Optional.ofNullable(defaultValue)
+	}
 
 	String getPath() {
 		return "cascb_" + toString().toLowerCase()
+	}
+
+	String getDefaultValue() {
+		return defaultValue.orElseThrow({->new IllegalArgumentException("cascb_${this.toString().toLowerCase()} not available in vault")})
 	}
 }
 
@@ -57,23 +71,12 @@ class VaultAccessor {
 		paths.collect{vault.logical().read(it).getData()}.each(values.&putAll)
 	}
 
+	String getValue(VaultConfigKey key) {
+		values.containsKey(key.path) ? values.get(key.path) : key.defaultValue
+	}
+
 	private String getOrThrow(Configs configName) {
 		configVars.get(configName).orElseThrow({new IllegalArgumentException("CASCB_${configName} not provided")})
-	}
-
-	String getValue(VaultConfigKey key) {
-		values.get(key.path)
-	}
-
-	String getValue(VaultConfigKey key, String defaultValue) {
-		values.getOrDefault(key.path, defaultValue);
-	}
-
-	String getValueOrThrow(VaultConfigKey key) {
-		if (!values.containsKey(key.path)) {
-			throw new IllegalArgumentException("cascb_${key.toString().toLowerCase()} not available in vault")
-		}
-		return values.get(key.path)
 	}
 }
 

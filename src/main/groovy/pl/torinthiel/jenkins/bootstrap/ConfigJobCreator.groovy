@@ -18,9 +18,9 @@ class ConfigJobCreator {
 				git {
 					remote{
 						url('${->retrieve(VaultConfigKey.REPO_URL)}')
-						credentials('${->retrieve(VaultConfigKey.SSH_ID, 'ssh-key')}')
+						credentials('${->retrieve(VaultConfigKey.SSH_ID)}')
 					}
-					branch('*/${->retrieve(VaultConfigKey.REPO_BRANCH, 'master')}')
+					branch('*/${->retrieve(VaultConfigKey.REPO_BRANCH)}')
 					extensions {
 						cleanBeforeCheckout()
 					}
@@ -52,10 +52,6 @@ class ConfigJobCreator {
 
 	def retrieve(VaultConfigKey key) {
 		accessor.getValue(key)
-	}
-
-	def retrieve(VaultConfigKey key, String defaultValue) {
-		accessor.getValue(key, defaultValue);
 	}
 
 	public generateJobs() {

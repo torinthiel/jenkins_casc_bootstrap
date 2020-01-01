@@ -100,8 +100,8 @@ public class VaultAccessorTest {
 		config.removeMapping(Configs.VAULT_URL);
 
 		Assertions.assertThrows(IllegalArgumentException.class, (Executable) () -> {
-			VaultAccessor acc = new VaultAccessor(config, factory);
-			acc.configureVault();
+				VaultAccessor acc = new VaultAccessor(config, factory);
+				acc.configureVault();
 			}, "CASCB_VAULT_URL is not provided"
 		);
 	}
@@ -140,6 +140,30 @@ public class VaultAccessorTest {
 
 		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
 		assertEquals("Second value", firstVal);
+	}
+
+	@Test
+	void shouldThrowErrorIfRequiredSettingMissing() throws VaultException {
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(new HashMap<>());
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		Assertions.assertThrows(IllegalArgumentException.class, (Executable) () -> {
+				acc.getValue(VaultConfigKey.REPO_URL);
+			}, "cascb_repo_url is not available in vault"
+		);
+	}
+
+	@Test
+	void shouldReturnDefaultValueIfMissing() throws VaultException {
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(new HashMap<>());
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String value = acc.getValue(VaultConfigKey.SSH_ID);
+		assertEquals("ssh-key", value);
 	}
 }
 

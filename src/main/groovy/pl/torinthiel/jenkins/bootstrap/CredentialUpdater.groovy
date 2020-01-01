@@ -17,10 +17,10 @@ class CredentialUpdater {
 	}
 
 	void updateCredentials() {
-		String id = accessor.getValue(VaultConfigKey.SSH_ID, 'ssh-key')
-		String user = accessor.getValueOrThrow(VaultConfigKey.SSH_USER)
-		String privateKey = accessor.getValueOrThrow(VaultConfigKey.SSH_KEY)
-		String description = accessor.getValue(VaultConfigKey.SSH_DESCRIPTION, "")
+		String id = accessor.getValue(VaultConfigKey.SSH_ID)
+		String user = accessor.getValue(VaultConfigKey.SSH_USER)
+		String privateKey = accessor.getValue(VaultConfigKey.SSH_KEY)
+		String description = accessor.getValue(VaultConfigKey.SSH_DESCRIPTION)
 		SystemCredentialsProvider plugin = instance.getExtensionList(SystemCredentialsProvider.class)[0]
 		def store = plugin.getStore()
 		def globalDomain = Domain.global()
