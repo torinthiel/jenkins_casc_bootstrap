@@ -3,10 +3,8 @@ package pl.torinthiel.jenkins.bootstrap;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -35,8 +33,6 @@ class SmokeIT {
 	private static final String VAULT_CONTAINER="vault:1.2.3";
 	private static final int VAULT_PORT = 8200;
 	private static final int JENKINS_PORT = 8080;
-
-	private static final String CRUMB_URL_PATTERN = "http://%s:%d/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)";
 
 	private static final Network net = newNetwork();
 	private static final Path dockerFile = Paths
@@ -68,6 +64,7 @@ class SmokeIT {
 
 	private final Logger log = LoggerFactory.getLogger(SmokeIT.class);
 	private GenericContainer<?> jenkins;
+	private JenkinsApi apiHelper;
 
 	@BeforeEach
 	private void prepareJenkinsContainer() {
@@ -90,34 +87,28 @@ class SmokeIT {
 
 	@Test
 	public void shouldInitializeJenkins() throws InterruptedException, IOException {
-		jenkins.start();
+		start();
+
 		assertUserExists("admin", "password");
 	}
 
 	@Test
 	public void shouldExtractCorrectBranch() throws InterruptedException, IOException {
-		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config")
-			.start();
+		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config");
+
+		start();
+
 		assertUserExists("admin", "different_password");
 	}
 
+	private void start() {
+		jenkins.start();
+		apiHelper = new JenkinsApi(jenkins.getContainerIpAddress(), jenkins.getFirstMappedPort());
+	}
+
 	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {
-		HttpURLConnection conn = getCrumbConnection(user, password);
+		HttpURLConnection conn = apiHelper.getCrumbConnection(user, password);
 		Assertions.assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
-	}
-
-	private HttpURLConnection getCrumbConnection(String user, String password)
-			throws MalformedURLException, IOException {
-		URL crumbUrl = new URL(String.format(CRUMB_URL_PATTERN, jenkins.getContainerIpAddress(), jenkins.getFirstMappedPort()));
-		HttpURLConnection conn = (HttpURLConnection) crumbUrl.openConnection();
-		addBasicAuth(user, password, conn);
-		return conn;
-	}
-
-	private void addBasicAuth(String user, String password, HttpURLConnection conn) {
-		String credentials = user + ":" + password;
-		String encoded = Base64.getEncoder().encodeToString(credentials.getBytes());
-		conn.setRequestProperty("Authorization", "Basic " + encoded);
 	}
 
 	@AfterEach
