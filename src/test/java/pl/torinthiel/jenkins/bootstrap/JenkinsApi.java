@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 public class JenkinsApi {
 	private static final String API_URL_TEMPLATE = "http://%s:%d/%s";
-	private static final String CRUMB_URL_PATTERN = "http://%s:%d/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)";
-	private static final String TOKEN_URL_PATTERN = "http://%s:%d//me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken";
+	private static final String CRUMB_URL_PATH = "crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)";
+	private static final String TOKEN_URL_PATH = "me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken";
 	private static final Pattern TOKEN_RESPONSE_PATTERN = Pattern.compile("\"tokenValue\":\"([0-9a-f]+)\"", Pattern.CASE_INSENSITIVE);
 
 	private String containerAddress;
@@ -32,7 +32,7 @@ public class JenkinsApi {
 		String[] crumb = getStringFromInputStream(conn.getInputStream()).split(":");
 		String cookie = conn.getHeaderField("Set-Cookie").split(";")[0];
 
-		URL tokenUrl = new URL(String.format(TOKEN_URL_PATTERN, containerAddress, apiPort));
+		URL tokenUrl = new URL(String.format(API_URL_TEMPLATE, containerAddress, apiPort, TOKEN_URL_PATH));
 		conn = (HttpURLConnection) tokenUrl.openConnection();
 		conn.setRequestMethod("POST");
 		conn.setRequestProperty("Cookie", cookie);
@@ -49,7 +49,7 @@ public class JenkinsApi {
 
 	public HttpURLConnection getCrumbConnection(String user, String password)
 			throws MalformedURLException, IOException {
-		URL crumbUrl = new URL(String.format(CRUMB_URL_PATTERN, containerAddress, apiPort));
+		URL crumbUrl = new URL(String.format(API_URL_TEMPLATE, containerAddress, apiPort, CRUMB_URL_PATH));
 		HttpURLConnection conn = (HttpURLConnection) crumbUrl.openConnection();
 		addBasicAuth(user, password, conn);
 		return conn;
