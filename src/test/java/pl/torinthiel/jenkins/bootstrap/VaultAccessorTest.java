@@ -110,10 +110,10 @@ public class VaultAccessorTest {
 	void shouldReadFromMultiplePaths() throws VaultException {
 		Map<String, String> firstMap = new HashMap<>();
 		firstMap.put("cascb_ssh_key", "First value");
-		Map<String, String> secondsMap = new HashMap<>();
-		secondsMap.put("cascb_repo_url", "Second value");
+		Map<String, String> secondMap = new HashMap<>();
+		secondMap.put("cascb_repo_url", "Second value");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(firstMap);
-		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondsMap);
+		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
 
 		VaultAccessor acc = new VaultAccessor(config, factory);
@@ -129,10 +129,10 @@ public class VaultAccessorTest {
 	void ifValueIsProvidedInTwoPathsLatterTakesPrecedence() throws VaultException {
 		Map<String, String> firstMap = new HashMap<>();
 		firstMap.put("cascb_ssh_key", "First value");
-		Map<String, String> secondsMap = new HashMap<>();
-		secondsMap.put("cascb_ssh_key", "Second value");
+		Map<String, String> secondMap = new HashMap<>();
+		secondMap.put("cascb_ssh_key", "Second value");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(firstMap);
-		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondsMap);
+		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
 
 		VaultAccessor acc = new VaultAccessor(config, factory);
