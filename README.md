@@ -88,7 +88,7 @@ The following values are retrieved from Vault:
 * cascb_repo_branch - the branch that should be checked out and contain configuration. Defaults to 'master' if not provided
 * cascb_repo_directories - the comma separated  list of directories within that branch that contain configuration. All
   `.yaml` files directly within any of those directories (not in subdirectory) will have their contents applied. If a file
-  with same name exists in more than one directory, the last one takes precedence.
+  with same name exists in more than one directory, the last one takes precedence. Missing directories are ignored.
   Defaults to '.', the root directory of repository.
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence. As an
