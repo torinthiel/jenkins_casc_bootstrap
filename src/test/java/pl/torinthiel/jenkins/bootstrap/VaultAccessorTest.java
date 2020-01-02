@@ -129,6 +129,7 @@ public class VaultAccessorTest {
 	void ifValueIsProvidedInTwoPathsLatterTakesPrecedence() throws VaultException {
 		Map<String, String> firstMap = new HashMap<>();
 		firstMap.put("cascb_ssh_key", "First value");
+		firstMap.put("cascb_ssh_user", "Other value");
 		Map<String, String> secondMap = new HashMap<>();
 		secondMap.put("cascb_ssh_key", "Second value");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(firstMap);
@@ -140,6 +141,8 @@ public class VaultAccessorTest {
 
 		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
 		assertEquals("Second value", firstVal);
+		String secondVal = acc.getValue(VaultConfigKey.SSH_USER);
+		assertEquals("Other value", secondVal);
 	}
 
 	@Test
@@ -164,6 +167,40 @@ public class VaultAccessorTest {
 
 		String value = acc.getValue(VaultConfigKey.SSH_ID);
 		assertEquals("ssh-key", value);
+	}
+
+	@Test
+	void shouldCombineValueWithPrevious() throws VaultException {
+		Map<String, String> skippedMap = new HashMap<>();
+		skippedMap.put("cascb_repo_directories", "ignored_value");
+		Map<String, String> firstMap = new HashMap<>();
+		firstMap.put("cascb_repo_directories", "first_value");
+		Map<String, String> secondMap = new HashMap<>();
+		secondMap.put("cascb_repo_directories", "(+),second_value");
+		when(vault.logical().read("secret/jenkins/skipped").getData()).thenReturn(skippedMap);
+		when(vault.logical().read("secret/jenkins/first").getData()).thenReturn(firstMap);
+		when(vault.logical().read("secret/jenkins/missing").getData()).thenReturn(new HashMap<>());
+		when(vault.logical().read("secret/jenkins/second").getData()).thenReturn(secondMap);
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/skipped,secret/jenkins/first,secret/jenkins/missing,secret/jenkins/second");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String value = acc.getValue(VaultConfigKey.REPO_DIRECTORIES);
+		assertEquals("first_value,second_value", value);
+	}
+
+	@Test
+	void shouldIgnoreMeergeMarkerOnFirst() throws VaultException {
+		Map<String, String> resultsMap = new HashMap<>();
+		resultsMap.put("cascb_repo_directories", "(+),correct_value");
+		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(resultsMap);
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		String retVal = acc.getValue(VaultConfigKey.REPO_DIRECTORIES);
+		assertEquals("correct_value", retVal);
 	}
 }
 

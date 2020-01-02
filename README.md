@@ -91,7 +91,8 @@ The following values are retrieved from Vault:
   with same name exists in more than one directory, the last one takes precedence.
   Defaults to '.', the root directory of repository.
 
-If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence.
+If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence. As an
+exception, if the directory list begins with (+), the rest of list is appended to the previous value of the field (if any).
 
 Building
 --------

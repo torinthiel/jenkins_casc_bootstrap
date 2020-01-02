@@ -15,7 +15,7 @@ enum VaultConfigKey {
 	SSH_ID('ssh-key'),
 	SSH_KEY
 
-	final Optional<String> defaultValue;
+	final Optional<String> defaultValue
 
 	VaultConfigKey() {
 		this(null)
@@ -32,6 +32,8 @@ enum VaultConfigKey {
 	String getDefaultValue() {
 		return defaultValue.orElseThrow({->new IllegalArgumentException("cascb_${this.toString().toLowerCase()} not available in vault")})
 	}
+
+	private static final MERGABLE_KEYS = EnumSet.of(REPO_DIRECTORIES)*.path
 }
 
 class VaultAccessor {
@@ -69,7 +71,21 @@ class VaultAccessor {
 
 	void readVariables(VaultConfig config) {
 		def paths = getOrThrow(VAULT_PATHS).split(",")
-		paths.collect{vault.logical().read(it).getData()}.each(values.&putAll)
+		paths.collect{vault.logical().read(it).getData()}.each{current ->
+			current.each{key, newValue ->
+				values.compute(key, {_, prevValue ->
+					if (newValue && newValue.startsWith('(+),') && key in VaultConfigKey.MERGABLE_KEYS) {
+						if (prevValue) {
+							prevValue + newValue.replace('(+)', '')
+						} else {
+							newValue.replace('(+),', '')
+						}
+					} else {
+						newValue ?: prevValue
+					}
+				})
+			}
+		}
 	}
 
 	String getValue(VaultConfigKey key) {
