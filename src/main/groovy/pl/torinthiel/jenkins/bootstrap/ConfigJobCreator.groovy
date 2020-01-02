@@ -32,7 +32,11 @@ class ConfigJobCreator {
 					TARGET_DIR=\$JENKINS_HOME/$CONFIG_SUBDIR
 
 					mkdir -p \$TARGET_DIR
-					cp *.yaml \$TARGET_DIR
+					for dir in ${->retrieve(VaultConfigKey.REPO_DIRECTORIES).replace(',', ' ')}; do
+						if [ -d \$dir ]; then
+							cp \$dir/*.yaml \$TARGET_DIR
+						fi
+					done
 				'''.stripIndent())
 				systemGroovyCommand('''\\
 					def jenkins = jenkins.model.Jenkins.get()

@@ -9,6 +9,7 @@ import java.util.function.Function
 enum VaultConfigKey {
 	REPO_URL,
 	REPO_BRANCH('master'),
+	REPO_DIRECTORIES('.'),
 	SSH_USER,
 	SSH_DESCRIPTION(''),
 	SSH_ID('ssh-key'),

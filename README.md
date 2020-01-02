@@ -42,8 +42,8 @@ get the SSH keys that are preconfigured into Jenkins as a Credential, and a
 location of git repository containing configuration.
 
 Later the scripts sets up and schedules a job that will clone the selected
-repository, assemble configuration into the `$JENKINS_HOME` and apply it to the
-running instance.
+repository, assemble configuration into the `$JENKINS_HOME` folder and apply it
+to the running instance.
 
 This process ensures that
 a) There are no configuration parts present in the image, everything comes in
@@ -86,6 +86,10 @@ The following values are retrieved from Vault:
 * cascb_ssh_id - the ID the generated credential will use. Defaults to 'ssh-key' if not provided
 * cascb_repo_url - the URL of git repository containing configuration. Required
 * cascb_repo_branch - the branch that should be checked out and contain configuration. Defaults to 'master' if not provided
+* cascb_repo_directories - the comma separated  list of directories within that branch that contain configuration. All
+  `.yaml` files directly within any of those directories (not in subdirectory) will have their contents applied. If a file
+  with same name exists in more than one directory, the last one takes precedence.
+  Defaults to '.', the root directory of repository.
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence.
 

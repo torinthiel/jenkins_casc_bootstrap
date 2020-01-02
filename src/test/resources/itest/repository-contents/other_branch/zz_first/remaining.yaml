@@ -1,0 +1,6 @@
+jenkins:
+  securityRealm:
+    local:
+      users:
+      - id: "second_user"
+        password: "other_password"

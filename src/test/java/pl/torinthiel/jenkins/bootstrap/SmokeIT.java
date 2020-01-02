@@ -58,6 +58,7 @@ class SmokeIT {
 					"cascb_repo_url=ssh://git/~/repo")
 			.withKv("secret/jenkins/branch_config",
 					"cascb_repo_branch=other_branch",
+					"cascb_repo_directories=zz_first,subdir,nonexistent",
 					"cascb_ssh_id=foobar",
 					"cascb_ssh_description=Testable description")
 			.withNetwork(net)
@@ -96,15 +97,19 @@ class SmokeIT {
 	}
 
 	@Test
-	public void shouldSetCredentialPropertiesAndExtractCorrectBranch() throws IOException {
-		// Tests two things at the same time:
+	public void shouldApplyNonDefaultValues() throws IOException {
+		// Tests several things at the same time:
 		// - that the generated credentials receive values from Vault
 		// - that the configuration is taken from correct branch
+		// - that the configuration is taken from indicated subdirectories, in order mentioned
+		// - that missing directories on the path are skipped
 		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config");
 
 		start();
 
+		// Assers existence of user as well
 		assertCredential("admin", "different_password", "foobar", "<description>Testable description</description>");
+		assertUserExists("second_user", "other_password");
 	}
 
 	private void assertCredential(String user, String password, String id, String expectedDescription) throws IOException {
