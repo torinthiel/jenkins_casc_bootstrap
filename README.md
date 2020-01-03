@@ -80,18 +80,18 @@ applies, from least important:
 
 The following values are retrieved from Vault:
 
-* cascb_ssh_key - the SSH key used to connect to repository with configuration. Required
-* cascb_ssh_user - the username to use for git authentication. Required
-* cascb_ssh_description - the description to use for the created SSH credential. Defaults to empty if not provided
-* cascb_ssh_id - the ID the generated credential will use. Defaults to 'ssh-key' if not provided
-* cascb_repo_url - the URL of git repository containing configuration. Required
-* cascb_repo_branch - the branch that should be checked out and contain configuration. Defaults to 'master' if not provided
+* cascb_ssh_key - the SSH key used to connect to repository with configuration. Required.
+* cascb_ssh_user - the username to use for git authentication. Required.
+* cascb_ssh_description - the description to use for the created SSH credential. Defaults to empty if not provided.
+* cascb_ssh_id - the ID the generated credential will use. Defaults to 'ssh-key' if not provided.
+* cascb_repo_url - the URL of git repository containing configuration. Required.
+* cascb_repo_branch - the branch that should be checked out and contain configuration. Defaults to 'master' if not provided.
 * cascb_repo_directories - the comma separated  list of directories within that branch that contain configuration. All
   `.yaml` files directly within any of those directories (not in subdirectory) will have their contents applied. If a file
   with same name exists in more than one directory, the last one takes precedence. Missing directories are ignored.
-  Defaults to '.', the root directory of repository.
+  If not provided, defaults to '.', the root directory of repository.
 * cascb_job_name - the name of generated job. Full path, where each /-separated component will be converted to a folder.
-  Defaults to 'config'
+  Defaults to 'config' if not provided.
 * cascb_job_description - the description that will be added to generated job. Defaults to empty if not provided.
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence. As an
