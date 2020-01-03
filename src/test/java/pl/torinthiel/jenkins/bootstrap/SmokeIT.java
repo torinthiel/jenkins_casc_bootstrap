@@ -93,7 +93,8 @@ class SmokeIT {
 	public void shouldInitializeJenkins() throws IOException {
 		start();
 
-		assertCredential("admin", "password", "ssh-key", "<description/>");
+		apiHelper.setupApiToken("admin", "password");
+		assertCredential("ssh-key", "<description/>");
 	}
 
 	@Test
@@ -107,19 +108,18 @@ class SmokeIT {
 
 		start();
 
-		// Assers existence of user as well
-		assertCredential("admin", "different_password", "foobar", "<description>Testable description</description>");
+		apiHelper.setupApiToken("admin", "different_password");
+		assertCredential("foobar", "<description>Testable description</description>");
 		assertUserExists("second_user", "other_password");
 	}
 
-	private void assertCredential(String user, String password, String id, String expectedDescription) throws IOException {
+	private void assertCredential(String id, String expectedDescription) throws IOException {
 		// Actually asserts 4 properties of the credential:
 		// - username and actual key, as the setup has succeeded
 		// - id, as it's part of the path
 		// - description, explicitly
 
 		String path = String.format("credentials/store/system/domain/_/credential/%s/api/xml?xpath=//description", id);
-		apiHelper.setupApiToken(user, password);
 		String descriptionXml = apiHelper.apiCall(path);
 		assertEquals(expectedDescription, descriptionXml);
 	}
