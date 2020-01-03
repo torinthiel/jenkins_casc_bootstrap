@@ -31,6 +31,7 @@ public class JenkinsApi {
 		HttpURLConnection conn = getCrumbConnection(user, password);
 		String[] crumb = getStringFromInputStream(conn.getInputStream()).split(":");
 		String cookie = conn.getHeaderField("Set-Cookie").split(";")[0];
+		conn.disconnect();
 
 		URL tokenUrl = new URL(String.format(API_URL_TEMPLATE, containerAddress, apiPort, TOKEN_URL_PATH));
 		conn = (HttpURLConnection) tokenUrl.openConnection();
@@ -39,6 +40,7 @@ public class JenkinsApi {
 		conn.setRequestProperty(crumb[0], crumb[1]);
 		addBasicAuth(user, password, conn);
 		String response = getStringFromInputStream(conn.getInputStream());
+		conn.disconnect();
 		Matcher tokenMatcher = TOKEN_RESPONSE_PATTERN.matcher(response);
 		if (!tokenMatcher.find()) {
 			throw new IllegalStateException("Cannot find API token in server response");
@@ -61,7 +63,9 @@ public class JenkinsApi {
 		if (jenkinsUser != null && apiToken != null) {
 			addBasicAuth(jenkinsUser, apiToken, conn);
 		}
-		return getStringFromInputStream(conn.getInputStream());
+		String result = getStringFromInputStream(conn.getInputStream());
+		conn.disconnect();
+		return result;
 	}
 
 	private void addBasicAuth(String user, String password, HttpURLConnection conn) {

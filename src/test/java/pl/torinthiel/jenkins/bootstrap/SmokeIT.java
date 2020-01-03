@@ -132,6 +132,7 @@ class SmokeIT {
 	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {
 		HttpURLConnection conn = apiHelper.getCrumbConnection(user, password);
 		assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
+		conn.disconnect();
 	}
 
 	@AfterEach
