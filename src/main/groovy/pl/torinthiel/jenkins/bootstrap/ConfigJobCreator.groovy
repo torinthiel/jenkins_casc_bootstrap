@@ -12,7 +12,13 @@ class ConfigJobCreator {
 	// That's the reason some things are escaped with a single \ and some with
 	// a double one, depending which level we need to protect from.
 	private final GString JOB_DSL_SCRIPT = """\
-		def configJob = job('config') {
+		def name = '${->retrieve(VaultConfigKey.JOB_NAME)}'
+		def index = -1
+		while ((index = name.indexOf('/', index + 1)) >= 0) {
+			folder(name.substring(0, index))
+		}
+
+		def configJob = job(name) {
 			label('master')
 			scm {
 				git {

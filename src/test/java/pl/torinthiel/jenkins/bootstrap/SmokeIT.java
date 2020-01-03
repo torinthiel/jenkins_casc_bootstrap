@@ -2,7 +2,6 @@ package pl.torinthiel.jenkins.bootstrap;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -57,6 +56,7 @@ class SmokeIT {
 					"cascb_ssh_user=git",
 					"cascb_repo_url=ssh://git/~/repo")
 			.withKv("secret/jenkins/branch_config",
+					"cascb_job_name=somefolder/subfolder/other_config",
 					"cascb_repo_branch=other_branch",
 					"cascb_repo_directories=zz_first,subdir,nonexistent",
 					"cascb_ssh_id=foobar",
@@ -74,7 +74,8 @@ class SmokeIT {
 	private void prepareJenkinsContainer() {
 		WaitAllStrategy combined = new WaitAllStrategy()
 			.withStrategy(forLogMessage(".*Jenkins is fully up and running.*", 1))
-			.withStrategy(forLogMessage(".*config #[0-9]+ main build action completed: SUCCESS.*", 1))
+			// Accept any job with 'config' in name
+			.withStrategy(forLogMessage(".*config[a-zA-Z]* #[0-9]+ main build action completed: SUCCESS.*", 1))
 			;
 
 		jenkins = new GenericContainer<>(new ImageFromDockerfile().withDockerfile(Paths.get("Dockerfile").toAbsolutePath()))
@@ -94,6 +95,7 @@ class SmokeIT {
 		start();
 
 		apiHelper.setupApiToken("admin", "password");
+		assertJobDescription("config", "<description/>");
 		assertCredential("ssh-key", "<description/>");
 	}
 
@@ -109,6 +111,7 @@ class SmokeIT {
 		start();
 
 		apiHelper.setupApiToken("admin", "different_password");
+		assertJobDescription("somefolder/subfolder/other_config", "<description/>");
 		assertCredential("foobar", "<description>Testable description</description>");
 		assertUserExists("second_user", "other_password");
 	}
@@ -129,10 +132,17 @@ class SmokeIT {
 		apiHelper = new JenkinsApi(jenkins.getContainerIpAddress(), jenkins.getFirstMappedPort());
 	}
 
-	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {
+	private void assertUserExists(String user, String password) throws IOException {
 		HttpURLConnection conn = apiHelper.getCrumbConnection(user, password);
 		assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
 		conn.disconnect();
+	}
+
+	private void assertJobDescription(String jobName, String expectedDescription) throws IOException {
+		String path = "job/" + jobName.replace("/", "/job/")  + "/api/xml?xpath=*/description";
+		log.info(path);
+		String descriptionXml = apiHelper.apiCall(path);
+		assertEquals(expectedDescription, descriptionXml);
 	}
 
 	@AfterEach

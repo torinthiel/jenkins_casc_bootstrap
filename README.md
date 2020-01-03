@@ -90,6 +90,8 @@ The following values are retrieved from Vault:
   `.yaml` files directly within any of those directories (not in subdirectory) will have their contents applied. If a file
   with same name exists in more than one directory, the last one takes precedence. Missing directories are ignored.
   Defaults to '.', the root directory of repository.
+* cascb_job_name - the name of generated job. Full path, where each /-separated component will be converted to a folder.
+  Defaults to 'config'
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence. As an
 exception, if the directory list begins with (+), the rest of list is appended to the previous value of the field (if any).

@@ -7,6 +7,7 @@ import static Configs.*
 import java.util.function.Function
 
 enum VaultConfigKey {
+	JOB_NAME('config'),
 	REPO_URL,
 	REPO_BRANCH('master'),
 	REPO_DIRECTORIES('.'),
