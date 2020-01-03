@@ -8,6 +8,7 @@ import java.util.function.Function
 
 enum VaultConfigKey {
 	JOB_NAME('config'),
+	JOB_DESCRIPTION(''),
 	REPO_URL,
 	REPO_BRANCH('master'),
 	REPO_DIRECTORIES('.'),

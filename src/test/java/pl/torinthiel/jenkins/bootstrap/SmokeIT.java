@@ -55,8 +55,10 @@ class SmokeIT {
 					"cascb_ssh_key=-",
 					"cascb_ssh_user=git",
 					"cascb_repo_url=ssh://git/~/repo")
-			.withKv("secret/jenkins/branch_config",
+			.withKvAndStdin("secret/jenkins/branch_config",
+					MountableFile.forClasspathResource("itest/job_description"),
 					"cascb_job_name=somefolder/subfolder/other_config",
+					"cascb_job_description=-",
 					"cascb_repo_branch=other_branch",
 					"cascb_repo_directories=zz_first,subdir,nonexistent",
 					"cascb_ssh_id=foobar",
@@ -111,7 +113,7 @@ class SmokeIT {
 		start();
 
 		apiHelper.setupApiToken("admin", "different_password");
-		assertJobDescription("somefolder/subfolder/other_config", "<description/>");
+		assertJobDescription("somefolder/subfolder/other_config", "<description>newline\nbackslash '\\' and some \"quotes\"\n</description>");
 		assertCredential("foobar", "<description>Testable description</description>");
 		assertUserExists("second_user", "other_password");
 	}

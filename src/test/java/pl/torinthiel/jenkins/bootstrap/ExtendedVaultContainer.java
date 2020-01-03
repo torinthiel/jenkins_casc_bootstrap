@@ -103,7 +103,7 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 		@Override
 		public String[] toCommand() {
 			StringBuilder buf = new StringBuilder(COMMAND_PREFIX).append(vaultCommand);
-			Arrays.asList(params).forEach(v -> buf.append(" ").append(v));
+			Arrays.asList(params).forEach(v -> buf.append(" \"").append(v).append("\""));
 			buf.append(COMMAND_SUFFIX);
 
 			return new String[] {"/bin/sh", "-ec", buf.toString()};

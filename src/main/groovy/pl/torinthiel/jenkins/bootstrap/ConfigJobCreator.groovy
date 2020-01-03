@@ -19,6 +19,10 @@ class ConfigJobCreator {
 		}
 
 		def configJob = job(name) {
+			description('${->retrieve(VaultConfigKey.JOB_DESCRIPTION)
+					.replace('\\', '\\\\')
+					.replace('\'', '\\\'')
+					.replace('\n', '\\n')}')
 			label('master')
 			scm {
 				git {
