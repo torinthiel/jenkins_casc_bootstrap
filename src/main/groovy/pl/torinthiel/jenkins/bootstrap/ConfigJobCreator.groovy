@@ -4,7 +4,7 @@ import javaposse.jobdsl.dsl.DslScriptLoader
 import javaposse.jobdsl.plugin.JenkinsJobManagement
 
 class ConfigJobCreator {
-	private static final String CONFIG_SUBDIR="jenkins_casc_configuration"
+	private static final String CONFIG_SUBDIR = "jenkins_casc_configuration"
 
 	// Note that this script is interpreted TWICE by groovy:
 	// Once when the class is parsed, second time when the script

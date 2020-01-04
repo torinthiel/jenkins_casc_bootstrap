@@ -7,16 +7,16 @@ import static Configs.*
 import java.util.function.Function
 
 enum VaultConfigKey {
-	JOB_NAME('config'),
-	JOB_DESCRIPTION(''),
-	JOB_POLL_SCHEDULE(''),
-	REPO_URL,
-	REPO_BRANCH('master'),
-	REPO_DIRECTORIES('.'),
 	SSH_USER,
 	SSH_DESCRIPTION(''),
 	SSH_ID('ssh-key'),
-	SSH_KEY
+	SSH_KEY,
+	REPO_URL,
+	REPO_BRANCH('master'),
+	REPO_DIRECTORIES('.'),
+	JOB_NAME('config'),
+	JOB_DESCRIPTION(''),
+	JOB_POLL_SCHEDULE('')
 
 	final Optional<String> defaultValue
 
