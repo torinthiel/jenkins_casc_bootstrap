@@ -97,7 +97,7 @@ class SmokeIT {
 		start();
 
 		apiHelper.setupApiToken("admin", "password");
-		assertJobDescription("config", "<description/>");
+		assertJobDescription("config", "");
 		assertCredential("ssh-key", "<description/>");
 	}
 
@@ -113,7 +113,7 @@ class SmokeIT {
 		start();
 
 		apiHelper.setupApiToken("admin", "different_password");
-		assertJobDescription("somefolder/subfolder/other_config", "<description>newline\nbackslash '\\' and some \"quotes\"\n</description>");
+		assertJobDescription("somefolder/subfolder/other_config", "newline\nbackslash '\\' and some \"quotes\"\n");
 		assertCredential("foobar", "<description>Testable description</description>");
 		assertUserExists("second_user", "other_password");
 	}
@@ -141,7 +141,7 @@ class SmokeIT {
 	}
 
 	private void assertJobDescription(String jobName, String expectedDescription) throws IOException {
-		String path = "job/" + jobName.replace("/", "/job/")  + "/api/xml?xpath=*/description";
+		String path = "job/" + jobName.replace("/", "/job/")  + "/description";
 		log.info(path);
 		String descriptionXml = apiHelper.apiCall(path);
 		assertEquals(expectedDescription, descriptionXml);
