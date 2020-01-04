@@ -93,6 +93,8 @@ The following values are retrieved from Vault:
 * cascb_job_name - the name of generated job. Full path, where each /-separated component will be converted to a folder.
   Defaults to 'config' if not provided.
 * cascb_job_description - the description that will be added to generated job. Defaults to empty if not provided.
+* cascb_job_poll_schedule - sets up Jenkins to periodically poll git and re-apply configuration if changes are found.
+  Needs to be a proper Jenkins cron expression. Defaults to empty, that is do not set polling. 
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence. As an
 exception, if the directory list begins with (+), the rest of list is appended to the previous value of the field (if any).

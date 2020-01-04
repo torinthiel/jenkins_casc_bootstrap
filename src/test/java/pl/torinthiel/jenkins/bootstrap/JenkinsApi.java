@@ -58,14 +58,19 @@ public class JenkinsApi {
 	}
 
 	public String apiCall(String path) throws IOException {
+		HttpURLConnection conn = getApiConnection(path);
+		String result = getStringFromInputStream(conn.getInputStream());
+		conn.disconnect();
+		return result;
+	}
+
+	public HttpURLConnection getApiConnection(String path) throws IOException {
 		URL keyUrl = new URL(String.format(API_URL_TEMPLATE, containerAddress, apiPort, path));
 		HttpURLConnection conn = (HttpURLConnection) keyUrl.openConnection();
 		if (jenkinsUser != null && apiToken != null) {
 			addBasicAuth(jenkinsUser, apiToken, conn);
 		}
-		String result = getStringFromInputStream(conn.getInputStream());
-		conn.disconnect();
-		return result;
+		return conn;
 	}
 
 	private void addBasicAuth(String user, String password, HttpURLConnection conn) {

@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +63,7 @@ class SmokeIT {
 					MountableFile.forClasspathResource("itest/job_description"),
 					"cascb_job_name=somefolder/subfolder/other_config",
 					"cascb_job_description=-",
+					"cascb_job_poll_schedule=H H * * *",
 					"cascb_repo_branch=other_branch",
 					"cascb_repo_directories=zz_first,subdir,nonexistent",
 					"cascb_ssh_id=foobar",
@@ -93,16 +98,17 @@ class SmokeIT {
 	}
 
 	@Test
-	public void shouldInitializeJenkins() throws IOException {
+	public void shouldInitializeJenkins() throws IOException, DocumentException {
 		start();
 
 		apiHelper.setupApiToken("admin", "password");
 		assertJobDescription("config", "");
+		assertJobPollSchedule("config", "");
 		assertCredential("ssh-key", "<description/>");
 	}
 
 	@Test
-	public void shouldApplyNonDefaultValues() throws IOException {
+	public void shouldApplyNonDefaultValues() throws IOException, DocumentException {
 		// Tests several things at the same time:
 		// - that the generated credentials receive values from Vault
 		// - that the configuration is taken from correct branch
@@ -114,6 +120,7 @@ class SmokeIT {
 
 		apiHelper.setupApiToken("admin", "different_password");
 		assertJobDescription("somefolder/subfolder/other_config", "newline\nbackslash '\\' and some \"quotes\"\n");
+		assertJobPollSchedule("somefolder/subfolder/other_config", "H H * * *");
 		assertCredential("foobar", "<description>Testable description</description>");
 		assertUserExists("second_user", "other_password");
 	}
@@ -145,6 +152,17 @@ class SmokeIT {
 		log.info(path);
 		String descriptionXml = apiHelper.apiCall(path);
 		assertEquals(expectedDescription, descriptionXml);
+	}
+
+	private void assertJobPollSchedule(String jobName, String expectedSchedule) throws IOException, DocumentException {
+		String path = "job/" + jobName.replace("/", "/job/")  + "/config.xml";
+		HttpURLConnection conn = apiHelper.getApiConnection(path);
+		Document doc = new SAXReader().read(conn.getInputStream());
+		conn.disconnect();
+		String scmPollingInterval = Optional.of(doc.getRootElement().element("triggers"))
+				.map(triggers -> triggers.element("hudson.triggers.SCMTrigger"))
+				.map(scm -> scm.elementText("spec")).orElse("");
+		assertEquals(expectedSchedule, scmPollingInterval);
 	}
 
 	@AfterEach

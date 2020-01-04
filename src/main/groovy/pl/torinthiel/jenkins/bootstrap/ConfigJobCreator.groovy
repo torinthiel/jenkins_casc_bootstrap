@@ -19,10 +19,7 @@ class ConfigJobCreator {
 		}
 
 		def configJob = job(name) {
-			description('${->retrieve(VaultConfigKey.JOB_DESCRIPTION)
-					.replace('\\', '\\\\')
-					.replace('\'', '\\\'')
-					.replace('\n', '\\n')}')
+			description('${->retrieve(VaultConfigKey.JOB_DESCRIPTION)}')
 			label('master')
 			scm {
 				git {
@@ -34,6 +31,13 @@ class ConfigJobCreator {
 					extensions {
 						cleanBeforeCheckout()
 					}
+				}
+			}
+
+			def scmPollingSchedule = '${->retrieve(VaultConfigKey.JOB_POLL_SCHEDULE)}'
+			if (scmPollingSchedule) {
+				triggers {
+					scm(scmPollingSchedule)
 				}
 			}
 
@@ -66,6 +70,9 @@ class ConfigJobCreator {
 
 	def retrieve(VaultConfigKey key) {
 		accessor.getValue(key)
+				.replace('\\', '\\\\')
+				.replace('\'', '\\\'')
+				.replace('\n', '\\n')
 	}
 
 	public generateJobs() {
