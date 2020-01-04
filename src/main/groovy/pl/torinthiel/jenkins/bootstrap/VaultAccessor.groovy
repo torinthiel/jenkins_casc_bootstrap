@@ -66,9 +66,18 @@ class VaultAccessor {
 	}
 
 	void authenticate(VaultConfig config) {
-		String user = configVars.get(VAULT_USER).get()
-		String pass = configVars.get(VAULT_PW).get()
-		String token = vault.auth().loginByUserPass(user, pass, "userpass").getAuthClientToken()
+		maybeAuthenticate(this.&authenticateUser, config, VAULT_USER, VAULT_PW)
+	}
+
+	void maybeAuthenticate(Closure authMethod, VaultConfig config, Configs... args) {
+		def maybeArgs = args.collect{configVars.get(it)}
+		if (maybeArgs.every{it.isPresent()}) {
+			authMethod(config, *maybeArgs.collect{it.get()})
+		}
+	}
+
+	private authenticateUser(VaultConfig config, String username, String password) {
+		String token = vault.auth().loginByUserPass(username, password, "userpass").getAuthClientToken()
 		config.token(token).build()
 	}
 

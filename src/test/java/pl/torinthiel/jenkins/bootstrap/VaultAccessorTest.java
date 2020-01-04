@@ -20,6 +20,8 @@ import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -201,6 +203,52 @@ public class VaultAccessorTest {
 
 		String retVal = acc.getValue(VaultConfigKey.REPO_DIRECTORIES);
 		assertEquals("correct_value", retVal);
+	}
+}
+
+@ExtendWith(MockitoExtension.class)
+class VaultAccessorLoginTest {
+
+	@Mock(answer = Answers.RETURNS_DEEP_STUBS)
+	Vault vault;
+
+	Function<VaultConfig, Vault> factory = config -> vault;
+
+	MockConfigVars config = new MockConfigVars();
+
+	@BeforeEach
+	void setUp() {
+		config.addMapping(Configs.VAULT_URL, "random_url");
+		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config");
+	}
+
+	@Test
+	void shouldLogInAsUserIfPossible() throws VaultException {
+		config.addMapping(Configs.VAULT_USER, "username");
+		config.addMapping(Configs.VAULT_PW, "password");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth()).loginByUserPass(eq("username"), eq("password"), anyString());
+	}
+
+	@Test
+	void shouldNotLogInAsUserIfUserMissing() throws VaultException {
+		config.addMapping(Configs.VAULT_PW, "password");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth(), times(0)).loginByUserPass(anyString(), anyString(), anyString());
+	}
+
+	@Test
+	void shouldNotLogInAsUserIfPasswordMissing() throws VaultException {
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth(), times(0)).loginByUserPass(anyString(), anyString(), anyString());
 	}
 }
 
