@@ -28,7 +28,6 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 	protected void containerIsStarted(InspectContainerResponse containerInfo) {
 		initialized = true;
 		commands.forEach(this::apply);
-		commands.clear();
 
 		super.containerIsStarted(containerInfo);
 	}

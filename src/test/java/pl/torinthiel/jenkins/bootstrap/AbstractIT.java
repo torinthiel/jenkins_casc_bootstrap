@@ -5,7 +5,6 @@ import java.net.HttpURLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
@@ -88,11 +87,6 @@ public class AbstractIT {
 		if (jenkins != null && jenkins.isRunning()) {
 			jenkins.stop();
 		}
-	}
-
-	@AfterAll
-	public static void finalTeardown() {
-		net.close();
 	}
 
 	protected void start() {
