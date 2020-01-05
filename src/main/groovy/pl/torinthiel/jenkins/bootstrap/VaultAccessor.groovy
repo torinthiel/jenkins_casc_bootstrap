@@ -67,6 +67,7 @@ class VaultAccessor {
 
 	void authenticate(VaultConfig config) {
 		maybeAuthenticate(this.&authenticateUser, config, VAULT_USER, VAULT_PW)
+		maybeAuthenticate(this.&authenticateToken, config, VAULT_TOKEN)
 	}
 
 	void maybeAuthenticate(Closure authMethod, VaultConfig config, Configs... args) {
@@ -78,6 +79,10 @@ class VaultAccessor {
 
 	private authenticateUser(VaultConfig config, String username, String password) {
 		String token = vault.auth().loginByUserPass(username, password, "userpass").getAuthClientToken()
+		config.token(token).build()
+	}
+
+	private authenticateToken(VaultConfig config, String token) {
 		config.token(token).build()
 	}
 

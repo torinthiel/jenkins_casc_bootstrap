@@ -61,6 +61,7 @@ The following configuration variables are supported:
 * CASCB_VAULT_URL - The URL to Vault server
 * CASCB_VAULT_USER - The username used to login
 * CASCB_VAULT_PW - The password used to login
+* CASCB_VAULT_TOKEN - The Vault token used to access Vault
 * CASCB_VAULT_PATHS - Comma-separated list of paths from which plugin should retrieve configuration
 * CASCB_VAULT_FILE - Path to properties file that will be scanned for above variables
 

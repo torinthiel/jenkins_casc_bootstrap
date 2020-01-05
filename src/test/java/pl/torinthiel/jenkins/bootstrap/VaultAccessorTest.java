@@ -20,6 +20,7 @@ import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -212,7 +213,8 @@ class VaultAccessorLoginTest {
 	@Mock(answer = Answers.RETURNS_DEEP_STUBS)
 	Vault vault;
 
-	Function<VaultConfig, Vault> factory = config -> vault;
+	VaultConfig usedConfig;
+	Function<VaultConfig, Vault> factory = config -> {usedConfig = config; return vault;};
 
 	MockConfigVars config = new MockConfigVars();
 
@@ -249,6 +251,18 @@ class VaultAccessorLoginTest {
 		acc.configureVault();
 
 		verify(vault.auth(), times(0)).loginByUserPass(anyString(), anyString(), anyString());
+	}
+
+	@Test
+	void shouldUseTokenIfProvided() {
+		String token = "some_would_be_token";
+		config.addMapping(Configs.VAULT_TOKEN, token);
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		assertNotNull(usedConfig);
+		assertEquals(token, usedConfig.getToken());
 	}
 }
 
