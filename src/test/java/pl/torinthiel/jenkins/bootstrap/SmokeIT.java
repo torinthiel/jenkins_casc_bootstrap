@@ -57,8 +57,7 @@ class SmokeIT {
 					"cascb_ssh_user=git",
 					"cascb_repo_url=ssh://git/~/repo")
 			.withKv("secret/jenkins/branch_config",
-					"cascb_repo_branch=other_branch")
-			.withKv("secret/jenkins/credential_config",
+					"cascb_repo_branch=other_branch",
 					"cascb_ssh_id=foobar",
 					"cascb_ssh_description=Testable description")
 			.withNetwork(net)
@@ -93,31 +92,31 @@ class SmokeIT {
 	public void shouldInitializeJenkins() throws IOException {
 		start();
 
-		assertUserExists("admin", "password");
+		assertCredential("admin", "password", "ssh-key", "<description/>");
 	}
 
 	@Test
-	public void shouldExtractCorrectBranch() throws IOException {
+	public void shouldSetCredentialPropertiesAndExtractCorrectBranch() throws IOException {
+		// Tests two things at the same time:
+		// - that the generated credentials receive values from Vault
+		// - that the configuration is taken from correct branch
 		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config");
 
 		start();
 
-		assertUserExists("admin", "different_password");
+		assertCredential("admin", "different_password", "foobar", "<description>Testable description</description>");
 	}
 
-	@Test
-	public void shouldSetCredentialProperties() throws IOException {
-		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/credential_config");
-
-		start();
-
-		apiHelper.setupApiToken("admin", "password");
-		String descriptionXml = apiHelper.apiCall("credentials/store/system/domain/_/credential/foobar/api/xml?xpath=//description");
-		assertEquals("<description>Testable description</description>", descriptionXml);
-		// Actually at this point we've tested 4 properties of the credential
+	private void assertCredential(String user, String password, String id, String expectedDescription) throws IOException {
+		// Actually asserts 4 properties of the credential:
 		// - username and actual key, as the setup has succeeded
 		// - id, as it's part of the path
 		// - description, explicitly
+
+		String path = String.format("credentials/store/system/domain/_/credential/%s/api/xml?xpath=//description", id);
+		apiHelper.setupApiToken(user, password);
+		String descriptionXml = apiHelper.apiCall(path);
+		assertEquals(expectedDescription, descriptionXml);
 	}
 
 	private void start() {
