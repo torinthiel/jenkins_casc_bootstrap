@@ -42,11 +42,11 @@ class SmokeIT extends AbstractIT {
 
 	@Test
 	public void shouldApplyNonDefaultValues() throws IOException, DocumentException {
-		// Tests several things at the same time:
-		// - that the generated credentials receive values from Vault
-		// - that the configuration is taken from correct branch
-		// - that the configuration is taken from indicated subdirectories, in order mentioned
-		// - that missing directories on the path are skipped
+		// Implicitly tests for several things at once, in addition to explicit asserts
+		//   * The configuration job has actually run
+		//   * It has taken configuration from correct branch
+		//   * It has taken configuration from correct directories, in correct order
+		//   * A directory mentioned in settings, but missing in repository does not break things
 		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config");
 
 		start();
