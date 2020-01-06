@@ -62,6 +62,8 @@ The following configuration variables are supported:
 * CASCB_VAULT_USER - The username used to login
 * CASCB_VAULT_PW - The password used to login
 * CASCB_VAULT_TOKEN - The Vault token used to access Vault
+* CASCB_VAULT_APPROLE - The Vault application role ID used to authenticate
+* CASCB_VAULT_APPROLE_SECRET - The Vault application role secret ID used to authenticate
 * CASCB_VAULT_PATHS - Comma-separated list of paths from which plugin should retrieve configuration
 * CASCB_VAULT_FILE - Path to properties file that will be scanned for above variables
 
@@ -70,6 +72,10 @@ the above list or with `CASC_` prefix used also by the Configuration-as-Code
 plugin. If the `CASCB_VAULT_FILE` or `CASC_VAULT_FILE` variable is present the
 file it points at will be scanned for the same variables. The file indicated by
 `CASCB_VAULT_FILE` is scanned only for variables with `CASCB_` prefix.
+
+At least one way of authenticating to Vault has to be present - either `CASCB_VAULT_TOKEN`,
+a `CASCB_VAULT_USER`/`CASCB_VAULT_PW` pair or `CASCB_VAULT_APPROLE`/`CASCB_VAULT_APPROLE_SECRET`
+pair. If more than one is present, the order in which they are tried is not specified.
 
 In case a variable is present in several places the following precedence
 applies, from least important:

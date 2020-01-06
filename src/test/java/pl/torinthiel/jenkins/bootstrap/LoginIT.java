@@ -30,4 +30,13 @@ public class LoginIT extends AbstractIT {
 		assertUserExists("admin", "password");
 	}
 
+	@Test
+	public void shouldLoginViaAppRole() throws IOException, DocumentException {
+		jenkins.withEnv("CASCB_VAULT_APPROLE", "custom_approle_id");
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET", "custom_approle_secret");
+
+		start();
+
+		assertUserExists("admin", "password");
+	}
 }

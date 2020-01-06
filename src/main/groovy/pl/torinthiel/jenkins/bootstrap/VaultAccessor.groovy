@@ -67,6 +67,7 @@ class VaultAccessor {
 
 	void authenticate(VaultConfig config) {
 		maybeAuthenticate(this.&authenticateUser, config, VAULT_USER, VAULT_PW)
+		maybeAuthenticate(this.&authenticateAppRole, config, VAULT_APPROLE, VAULT_APPROLE_SECRET)
 		maybeAuthenticate(this.&authenticateToken, config, VAULT_TOKEN)
 	}
 
@@ -83,6 +84,11 @@ class VaultAccessor {
 	}
 
 	private authenticateToken(VaultConfig config, String token) {
+		config.token(token).build()
+	}
+
+	private authenticateAppRole(VaultConfig config, String approle, String secret) {
+		String token = vault.auth().loginByAppRole("approle", approle, secret).getAuthClientToken()
 		config.token(token).build()
 	}
 

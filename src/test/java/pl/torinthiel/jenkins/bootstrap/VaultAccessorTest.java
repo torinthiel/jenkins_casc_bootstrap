@@ -264,6 +264,17 @@ class VaultAccessorLoginTest {
 		assertNotNull(usedConfig);
 		assertEquals(token, usedConfig.getToken());
 	}
+
+	@Test
+	void shouldLogInAsAppRoleIfPossible() throws VaultException {
+		config.addMapping(Configs.VAULT_APPROLE, "approle");
+		config.addMapping(Configs.VAULT_APPROLE_SECRET, "secret");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth()).loginByAppRole(anyString(), eq("approle"), eq("secret"));
+	}
 }
 
 class MockConfigVars implements Retriever {

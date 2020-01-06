@@ -52,6 +52,14 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 		return self();
 	}
 
+	public SELF withSecretInVault2(String path, String... values) {
+		// There are two problems with original .withSecretInVault
+		// 1. it requires at least one key-value pair, which is sometimes unncesessary
+		// 2. It "orders" writes via HashMap, which causes problems when a write creates endpoint for the next call
+		stageOrApply(new WriteCommand(path, values));
+		return self();
+	}
+
 	private void stageOrApply(VaultCommand command) {
 		if (initialized) {
 			apply(command);
@@ -141,6 +149,24 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 			return Arrays.copyOf(command, command.length);
 		}
 	}
+
+	class WriteCommand extends VaultCommand {
+		private final String[] command;
+
+		public WriteCommand(String path, String[] values) {
+			if (values.length == 0) {
+				command = new String[] {VAULT_COMMAND, "write", "-f", path};
+			} else {
+				command = Arrays.copyOf(new String[] {VAULT_COMMAND, "write", path}, values.length + 3);
+				System.arraycopy(values, 0, command, 3, values.length);
+			}
+		}
+
+		@Override
+		public String[] toCommand() {
+			return Arrays.copyOf(command, command.length);
+		}
+}
 
 	class KeyValueWithStdin extends VaultCommandWithStdin {
 		public KeyValueWithStdin(String path, Transferable stdin, String[] values) {
