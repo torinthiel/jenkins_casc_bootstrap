@@ -115,3 +115,10 @@ You can customize `plugins.txt` beforehand to provide the plugins you need.
 
 Run maven build to run tests for the functionality, the resulting maven
 artifact is not used anywhere and needs not be published.
+
+Things to do
+------------
+
+* Support Vault namespaces
+* Better logging and error handling
+* Provide images with minimal required set of plugins as well as Jenkins recommended set
