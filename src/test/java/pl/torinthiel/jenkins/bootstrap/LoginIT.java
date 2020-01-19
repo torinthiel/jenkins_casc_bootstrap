@@ -39,4 +39,26 @@ public class LoginIT extends AbstractIT {
 
 		assertUserExists("admin", "password");
 	}
+
+	@Test
+	public void shouldLoginViaUserPassMount() throws IOException, DocumentException {
+		jenkins.withEnv("CASC_VAULT_USER", "mountuser");
+		jenkins.withEnv("CASC_VAULT_PW", "mountpassword");
+		jenkins.withEnv("CASCB_VAULT_MOUNT", "otherusermount");
+
+		start();
+
+		assertUserExists("admin", "password");
+	}
+
+	@Test
+	public void shouldLoginViaAppRoleMount() throws IOException, DocumentException {
+		jenkins.withEnv("CASCB_VAULT_APPROLE", "different_approle_id");
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET", "different_approle_secret");
+		jenkins.withEnv("CASCB_VAULT_MOUNT", "otherrolemount");
+
+		start();
+
+		assertUserExists("admin", "password");
+	}
 }

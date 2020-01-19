@@ -33,7 +33,11 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 	}
 
 	public SELF withAuthEngine(String name) {
-		stageOrApply(new AuthEngineCommand(name));
+		return withAuthEngine(name, name);
+	}
+
+	public SELF withAuthEngine(String name, String path) {
+		stageOrApply(new AuthEngineCommand(name, path));
 		return self();
 	}
 
@@ -125,14 +129,16 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 
 	class AuthEngineCommand extends VaultCommand {
 		private final String name;
+		private final String path;
 
-		public AuthEngineCommand(String name) {
+		public AuthEngineCommand(String name, String path) {
 			this.name = name;
+			this.path = "-path=" + path;
 		}
 
 		@Override
 		public String[] toCommand() {
-			return new String[]{ VAULT_COMMAND, "auth", "enable", name };
+			return new String[]{ VAULT_COMMAND, "auth", "enable", path, name };
 		}
 	}
 

@@ -42,11 +42,17 @@ public class AbstractIT {
 	private static final ExtendedVaultContainer<?> vaultContainer = new ExtendedVaultContainer<>(VAULT_CONTAINER)
 			.withAuthEngine("userpass")
 			.withAuthEngine("approle")
+			.withAuthEngine("userpass", "otherusermount")
+			.withAuthEngine("approle", "otherrolemount")
 			.withPolicy("jenkins_policy", MountableFile.forClasspathResource("itest/jenkins_policy.hcl"))
 			.withSecretInVault("auth/userpass/users/jenkins", "password=S3cRet",  "policies=jenkins_policy")
 			.withSecretInVault2("auth/approle/role/jenkins_role", "token_policies=jenkins_policy")
 			.withSecretInVault("auth/approle/role/jenkins_role/role-id", "role_id=custom_approle_id")
 			.withSecretInVault("auth/approle/role/jenkins_role/custom-secret-id", "secret_id=custom_approle_secret")
+			.withSecretInVault("auth/otherusermount/users/mountuser", "password=mountpassword",  "policies=jenkins_policy")
+			.withSecretInVault2("auth/otherrolemount/role/jenkins_role", "token_policies=jenkins_policy")
+			.withSecretInVault("auth/otherrolemount/role/jenkins_role/role-id", "role_id=different_approle_id")
+			.withSecretInVault("auth/otherrolemount/role/jenkins_role/custom-secret-id", "secret_id=different_approle_secret")
 			.withKvAndStdin("secret/jenkins/config",
 					MountableFile.forClasspathResource("itest/test_key_rsa"),
 					"cascb_ssh_key=-",

@@ -79,7 +79,8 @@ class VaultAccessor {
 	}
 
 	private authenticateUser(VaultConfig config, String username, String password) {
-		String token = vault.auth().loginByUserPass(username, password, "userpass").getAuthClientToken()
+		String mount = configVars.get(VAULT_MOUNT).orElse("userpass")
+		String token = vault.auth().loginByUserPass(username, password, mount).getAuthClientToken()
 		config.token(token).build()
 	}
 
@@ -88,7 +89,8 @@ class VaultAccessor {
 	}
 
 	private authenticateAppRole(VaultConfig config, String approle, String secret) {
-		String token = vault.auth().loginByAppRole("approle", approle, secret).getAuthClientToken()
+		String mount = configVars.get(VAULT_MOUNT).orElse("approle")
+		String token = vault.auth().loginByAppRole(mount, approle, secret).getAuthClientToken()
 		config.token(token).build()
 	}
 

@@ -236,6 +236,18 @@ class VaultAccessorLoginTest {
 	}
 
 	@Test
+	void shouldLogInAsUserWithPAthIfPossible() throws VaultException {
+		config.addMapping(Configs.VAULT_USER, "username");
+		config.addMapping(Configs.VAULT_PW, "password");
+		config.addMapping(Configs.VAULT_MOUNT, "somepath");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth()).loginByUserPass("username", "password", "somepath");
+	}
+
+	@Test
 	void shouldNotLogInAsUserIfUserMissing() throws VaultException {
 		config.addMapping(Configs.VAULT_PW, "password");
 
@@ -274,6 +286,18 @@ class VaultAccessorLoginTest {
 		acc.configureVault();
 
 		verify(vault.auth()).loginByAppRole(anyString(), eq("approle"), eq("secret"));
+	}
+
+	@Test
+	void shouldLogInAsAppRoleWithPathIfPossible() throws VaultException {
+		config.addMapping(Configs.VAULT_APPROLE, "approle");
+		config.addMapping(Configs.VAULT_APPROLE_SECRET, "secret");
+		config.addMapping(Configs.VAULT_MOUNT, "otherpath");
+
+		VaultAccessor acc = new VaultAccessor(config, factory);
+		acc.configureVault();
+
+		verify(vault.auth()).loginByAppRole("otherpath", "approle", "secret");
 	}
 }
 
