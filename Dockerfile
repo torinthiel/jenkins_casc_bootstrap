@@ -13,7 +13,7 @@ COPY src/main/groovy/pl/torinthiel/jenkins/bootstrap/*.groovy src/
 RUN sed -e '/^package /d' src/* ConfigurationAsCodeBootstrap.footer.groovy > ConfigurationAsCodeBootstrap.groovy
 
 
-FROM jenkins/jenkins:2.204.1
+FROM jenkins/jenkins:2.204.2
 
 # Disable installer, as configuration will be handled in a different way.
 ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
