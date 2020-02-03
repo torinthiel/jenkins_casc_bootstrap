@@ -9,6 +9,9 @@ import java.util.function.Function
 enum VaultConfigKey {
 	REPO_URL,
 	REPO_BRANCH,
+	SSH_USER,
+	SSH_DESCRIPTION,
+	SSH_ID,
 	SSH_KEY
 
 	String getPath() {
@@ -60,6 +63,17 @@ class VaultAccessor {
 
 	String getValue(VaultConfigKey key) {
 		values.get(key.path)
+	}
+
+	String getValue(VaultConfigKey key, String defaultValue) {
+		values.getOrDefault(key.path, defaultValue);
+	}
+
+	String getValueOrThrow(VaultConfigKey key) {
+		if (!values.containsKey(key.path)) {
+			throw new IllegalArgumentException("cascb_${key.toString().toLowerCase()} not available in vault")
+		}
+		return values.get(key.path)
 	}
 }
 

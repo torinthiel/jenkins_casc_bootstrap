@@ -35,6 +35,7 @@ EOF
 KEY="/dev/null"
 test -f jenkins_test && KEY="jenkins_test"
 cat $KEY | ./command.sh kv put secret/jenkins/config cascb_ssh_key=- \
+	cascb_ssh_user=git \
 	cascb_repo_url='git@github.com:torinthiel/jenkins_casc_bootstrap.git' \
 	cascb_repo_branch='experiments'
 

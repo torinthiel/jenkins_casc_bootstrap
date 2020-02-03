@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import static java.time.Duration.ofMinutes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.testcontainers.containers.Network.newNetwork;
 import static org.testcontainers.containers.wait.strategy.Wait.forLogMessage;
 
@@ -54,9 +54,13 @@ class SmokeIT {
 			.withKvAndStdin("secret/jenkins/config",
 					MountableFile.forClasspathResource("itest/test_key_rsa"),
 					"cascb_ssh_key=-",
+					"cascb_ssh_user=git",
 					"cascb_repo_url=ssh://git/~/repo")
 			.withKv("secret/jenkins/branch_config",
 					"cascb_repo_branch=other_branch")
+			.withKv("secret/jenkins/credential_config",
+					"cascb_ssh_id=foobar",
+					"cascb_ssh_description=Testable description")
 			.withNetwork(net)
 			.withNetworkAliases("vault")
 			.withVaultToken("super_secret_root_token")
@@ -86,19 +90,34 @@ class SmokeIT {
 	}
 
 	@Test
-	public void shouldInitializeJenkins() throws InterruptedException, IOException {
+	public void shouldInitializeJenkins() throws IOException {
 		start();
 
 		assertUserExists("admin", "password");
 	}
 
 	@Test
-	public void shouldExtractCorrectBranch() throws InterruptedException, IOException {
+	public void shouldExtractCorrectBranch() throws IOException {
 		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config");
 
 		start();
 
 		assertUserExists("admin", "different_password");
+	}
+
+	@Test
+	public void shouldSetCredentialProperties() throws IOException {
+		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/credential_config");
+
+		start();
+
+		apiHelper.setupApiToken("admin", "password");
+		String descriptionXml = apiHelper.apiCall("credentials/store/system/domain/_/credential/foobar/api/xml?xpath=//description");
+		assertEquals("<description>Testable description</description>", descriptionXml);
+		// Actually at this point we've tested 4 properties of the credential
+		// - username and actual key, as the setup has succeeded
+		// - id, as it's part of the path
+		// - description, explicitly
 	}
 
 	private void start() {
@@ -108,7 +127,7 @@ class SmokeIT {
 
 	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {
 		HttpURLConnection conn = apiHelper.getCrumbConnection(user, password);
-		Assertions.assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
+		assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
 	}
 
 	@AfterEach

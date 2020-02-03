@@ -81,6 +81,9 @@ applies, from least important:
 The following values are retrieved from Vault:
 
 * cascb_ssh_key - the SSH key used to connect to repository with configuration. Required
+* cascb_ssh_user - the username to use for git authentication. Required
+* cascb_ssh_description - the description to use for the created SSH credential. Defaults to empty if not provided
+* cascb_ssh_id - the ID the generated credential will use. Defaults to 'ssh-key' if not provided
 * cascb_repo_url - the URL of git repository containing configuration. Required
 * cascb_repo_branch - the branch that should be checked out and contain configuration. Defaults to 'master' if not provided
 

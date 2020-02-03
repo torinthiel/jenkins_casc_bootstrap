@@ -15,8 +15,8 @@ public class CascBootstrap {
 		accessor.configureVault()
 		log.log(INFO, "Connected to vault")
 
-		CredentialUpdater updater = new CredentialUpdater(Jenkins.get())
-		updater.updateCredentials("ssh-key", "git", accessor.getValue(VaultConfigKey.SSH_KEY))
+		CredentialUpdater updater = new CredentialUpdater(Jenkins.get(), accessor)
+		updater.updateCredentials()
 		log.log(INFO, "Configured credentials")
 
 		ConfigJobCreator creator = new ConfigJobCreator(accessor)
