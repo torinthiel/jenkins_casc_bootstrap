@@ -9,13 +9,13 @@ class ConfigJobCreator {
 	// is passed to DslScriptLoader and executed.
 	// That's the reason some things are escaped with a single \ and some with
 	// a double one, depending which level we need to protect from.
-	private static final String JOB_DSL_SCRIPT = """\
+	private final String JOB_DSL_SCRIPT = """\
 		def configJob = job('config') {
 			label('master')
 			scm {
 				git {
 					remote{
-						url('git@github.com:torinthiel/jenkins_casc_bootstrap.git')
+						url('${->repoPath}')
 						credentials('ssh-key')
 					}
 					branch('*/experiments')
@@ -41,6 +41,10 @@ class ConfigJobCreator {
 		}
 		queue(configJob)
 	""".stripIndent()
+
+	def getRepoPath() {
+		 return 'git@github.com:torinthiel/jenkins_casc_bootstrap.git'
+	}
 
 	public generateJobs() {
 		System.out.println(JOB_DSL_SCRIPT)
