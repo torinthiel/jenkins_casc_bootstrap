@@ -22,5 +22,6 @@ git add .
 git commit -m'Initial commit, readme'
 
 create_branch_from_dir experiments ../repository-contents/experiments "Basic smoke test"
+create_branch_from_dir other_branch ../repository-contents/other_branch "Different branch test"
 
 git checkout master

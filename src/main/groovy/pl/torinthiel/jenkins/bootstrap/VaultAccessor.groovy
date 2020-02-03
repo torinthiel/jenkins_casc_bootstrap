@@ -8,6 +8,7 @@ import java.util.function.Function
 
 enum VaultConfigKey {
 	REPO_URL,
+	REPO_BRANCH,
 	SSH_KEY
 
 	String getPath() {

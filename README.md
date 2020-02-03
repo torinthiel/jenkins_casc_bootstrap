@@ -82,6 +82,7 @@ The following values are retrieved from Vault:
 
 * cascb_ssh_key - the SSH key used to connect to repository with configuration
 * cascb_repo_url - the URL of git repository containing configuration
+* cascb_repo_branch - the branch that should be checked out and contain configuration
 
 If any of those values exists in more than one path from CASCB_VAULT_PATHS, than the last value takes precedence.
 

@@ -58,7 +58,10 @@ class SmokeIT {
 			.withKvAndStdin("secret/jenkins/config",
 					MountableFile.forClasspathResource("itest/test_key_rsa"),
 					"cascb_ssh_key=-",
-					"cascb_repo_url=ssh://git/~/repo")
+					"cascb_repo_url=ssh://git/~/repo",
+					"cascb_repo_branch=experiments")
+			.withKv("secret/jenkins/branch_config",
+					"cascb_repo_branch=other_branch")
 			.withNetwork(net)
 			.withNetworkAliases("vault")
 			.withVaultToken("super_secret_root_token")
@@ -90,6 +93,13 @@ class SmokeIT {
 	public void shouldInitializeJenkins() throws InterruptedException, IOException {
 		jenkins.start();
 		assertUserExists("admin", "password");
+	}
+
+	@Test
+	public void shouldExtractCorrectBranch() throws InterruptedException, IOException {
+		jenkins.withEnv("CASCB_VAULT_PATHS", "secret/jenkins/config,secret/jenkins/branch_config")
+			.start();
+		assertUserExists("admin", "different_password");
 	}
 
 	private void assertUserExists(String user, String password) throws MalformedURLException, IOException {

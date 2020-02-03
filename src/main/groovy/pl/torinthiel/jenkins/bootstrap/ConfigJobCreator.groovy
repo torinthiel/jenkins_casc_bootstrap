@@ -17,10 +17,10 @@ class ConfigJobCreator {
 			scm {
 				git {
 					remote{
-						url('${->repoPath}')
+						url('${->retrieve(VaultConfigKey.REPO_URL)}')
 						credentials('ssh-key')
 					}
-					branch('*/experiments')
+					branch('*/${->retrieve(VaultConfigKey.REPO_BRANCH)}')
 					extensions {
 						cleanBeforeCheckout()
 					}
@@ -50,8 +50,8 @@ class ConfigJobCreator {
 		this.accessor = accessor
 	}
 
-	def getRepoPath() {
-		accessor.getValue(VaultConfigKey.REPO_URL)
+	def retrieve(VaultConfigKey key) {
+		accessor.getValue(key)
 	}
 
 	public generateJobs() {

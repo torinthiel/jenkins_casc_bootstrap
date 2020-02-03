@@ -34,7 +34,9 @@ EOF
 # Configure some test data
 KEY="/dev/null"
 test -f jenkins_test && KEY="jenkins_test"
-cat $KEY | ./command.sh kv put secret/jenkins/config cascb_ssh_key=- cascb_repo_url='git@github.com:torinthiel/jenkins_casc_bootstrap.git'
+cat $KEY | ./command.sh kv put secret/jenkins/config cascb_ssh_key=- \
+	cascb_repo_url='git@github.com:torinthiel/jenkins_casc_bootstrap.git' \
+	cascb_repo_branch='experiments'
 
 # Revoke the root token after the initial configuration
 ./command.sh token revoke $VAULT_TOKEN

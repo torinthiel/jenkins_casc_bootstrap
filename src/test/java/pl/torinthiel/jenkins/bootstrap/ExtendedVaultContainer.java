@@ -38,6 +38,11 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 		return self();
 	}
 
+	public SELF withKv(String path, String... values) {
+		stageOrApply(new KeyValueCommand(path, values));
+		return self();
+	}
+
 	public SELF withKvAndStdin(String path, Transferable stdin, String... values) {
 		stageOrApply(new KeyValueWithStdin(path, stdin, values));
 		return self();
@@ -121,6 +126,20 @@ public class ExtendedVaultContainer<SELF extends ExtendedVaultContainer<SELF>> e
 		@Override
 		public String[] toCommand() {
 			return new String[]{ VAULT_COMMAND, "auth", "enable", name };
+		}
+	}
+
+	class KeyValueCommand extends VaultCommand {
+		private final String[] command;
+
+		public KeyValueCommand(String path, String[] values) {
+			command = Arrays.copyOf(new String[] {VAULT_COMMAND, "kv", "put", path}, values.length + 4);
+			System.arraycopy(values, 0, command, 4, values.length);
+		}
+
+		@Override
+		public String[] toCommand() {
+			return Arrays.copyOf(command, command.length);
 		}
 	}
 
