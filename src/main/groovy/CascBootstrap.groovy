@@ -17,7 +17,7 @@ public class CascBootstrap {
 		updater.updateCredentials("ssh-key", "git", accessor.getValue(VaultConfigKey.SSH_KEY))
 		log.log(INFO, "Configured credentials")
 
-		ConfigJobCreator creator = new ConfigJobCreator()
+		ConfigJobCreator creator = new ConfigJobCreator(accessor)
 		creator.generateJobs()
 		log.log(INFO, "Created configuration job")
 	}

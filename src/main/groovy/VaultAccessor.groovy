@@ -5,6 +5,7 @@ import static Configs.*
 import java.util.function.Function
 
 enum VaultConfigKey {
+	REPO_URL,
 	SSH_KEY
 
 	String getPath() {

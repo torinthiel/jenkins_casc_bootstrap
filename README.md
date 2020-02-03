@@ -73,6 +73,7 @@ applies, from least important:
 The following values are retrieved from Vault:
 
 * cascb_ssh_key - the SSH key used to connect to repository with configuration
+* cascb_repo_url - the URL of git repository containing configuration
 
 Building
 --------
