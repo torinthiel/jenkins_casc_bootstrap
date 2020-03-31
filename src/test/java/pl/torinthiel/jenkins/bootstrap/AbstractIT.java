@@ -7,12 +7,18 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.output.FrameConsumerResultCallback;
+import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.MountableFile;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 
 import static java.time.Duration.ofMinutes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -108,5 +114,23 @@ public class AbstractIT {
 		HttpURLConnection conn = apiHelper.getCrumbConnection(user, password);
 		assertEquals(200, conn.getResponseCode(), "The request for crumb ended with error");
 		conn.disconnect();
+	}
+
+	protected String runCommandInVault(String... command) throws UnsupportedOperationException, IOException, InterruptedException {
+		// This code is mostly copied from org.testcontainers.containers.ExecInContainerPattern.execInContainer
+		// The original uses org.testcontainers.containers.output.ToStringConsumer which behaves weird
+		// - it inserts a newline every frame, but
+		// a) the input already contains newlines
+		// b) frame boundaries appear in random places
+		// Thus the result is full of unneeded newlines, and a few needed ones that cannot be distinguished.
+		DockerClient dockerClient = DockerClientFactory.instance().client();
+		String containerId = vaultContainer.getContainerId();
+		final ExecCreateCmdResponse execCreateCmdResponse =
+				dockerClient.execCreateCmd(containerId).withAttachStdout(true).withCmd(command).exec();
+		final ToStringConsumer stdoutConsumer = new ToStringConsumer();
+		FrameConsumerResultCallback callback = new FrameConsumerResultCallback();
+		callback.addConsumer(OutputFrame.OutputType.STDOUT, stdoutConsumer);
+		dockerClient.execStartCmd(execCreateCmdResponse.getId()).exec(callback).awaitCompletion();
+		return stdoutConsumer.toUtf8String();
 	}
 }
