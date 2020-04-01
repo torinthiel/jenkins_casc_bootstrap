@@ -1,7 +1,10 @@
 package pl.torinthiel.jenkins.bootstrap;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,5 +63,31 @@ public class LoginIT extends AbstractIT {
 		start();
 
 		assertUserExists("admin", "password");
+	}
+
+	@Test
+	public void shouldLoginViaAppRoleWrapped() throws Exception {
+		String result = runCommandInVault("vault", "write", "-force", "-wrap-ttl=10m", "auth/approle/role/jenkins_role/secret-id");
+		String wrappingToken = extractFieldFromResponse("wrapping_token", result);
+
+		jenkins.withEnv("CASCB_VAULT_APPROLE", "custom_approle_id");
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET_WRAPPED", wrappingToken);
+
+		start();
+
+		assertUserExists("admin", "password");
+	}
+
+	private String extractFieldFromResponse(String field, String response) {
+		String[] lines = response.split("\\R");
+		Pattern expr = Pattern.compile("^"+field+"\\b");
+
+		return Arrays
+				.stream(lines)
+				.filter(s -> expr.matcher(s).find())
+				.map(StringUtils::split)
+				.map(arr -> arr[arr.length-1])
+				.findFirst()
+				.get();
 	}
 }

@@ -58,6 +58,8 @@ class VaultAccessor {
 		String vaultUrl = getOrThrow(VAULT_URL)
 		VaultConfig config = new VaultConfig()
 			.address(vaultUrl)
+			.putSecretsEngineVersionForPath('sys/wrapping/unwrap/', '1')
+			.engineVersion(2)
 			.build()
 
 		vault = vaultFactory.apply(config)
@@ -68,6 +70,7 @@ class VaultAccessor {
 	void authenticate(VaultConfig config) {
 		maybeAuthenticate(this.&authenticateUser, config, VAULT_USER, VAULT_PW)
 		maybeAuthenticate(this.&authenticateAppRole, config, VAULT_APPROLE, VAULT_APPROLE_SECRET)
+		maybeAuthenticate(this.&authenticateWrappedAppRole, config, VAULT_APPROLE, VAULT_APPROLE_SECRET_WRAPPED)
 		maybeAuthenticate(this.&authenticateToken, config, VAULT_TOKEN)
 	}
 
@@ -92,6 +95,12 @@ class VaultAccessor {
 		String mount = configVars.get(VAULT_MOUNT).orElse("approle")
 		String token = vault.auth().loginByAppRole(mount, approle, secret).getAuthClientToken()
 		config.token(token).build()
+	}
+
+	private authenticateWrappedAppRole(VaultConfig config, String approle, String wrappingToken) {
+		config.token(wrappingToken).build()
+		String secret = vault.logical().write('sys/wrapping/unwrap', null).data['secret_id']
+		authenticateAppRole(config, approle, secret)
 	}
 
 	void readVariables(VaultConfig config) {
