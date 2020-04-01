@@ -66,7 +66,7 @@ The following configuration variables are supported:
 * CASCB_VAULT_APPROLE_SECRET - The Vault application role secret ID used to authenticate
 * CASCB_VAULT_APPROLE_SECRET_WRAPPED - The wrapping token that can be used to retrieve secret ID
 * CASCB_VAULT_PATHS - Comma-separated list of paths from which plugin should retrieve configuration
-* CASCB_VAULT_MOUNT - the path used for authentication with the selected mechanism. Use it when the auth is bound in a non-default location, as well as for authentication methods that also accept a user-password pair, e.g. ldap. 
+* CASCB_VAULT_MOUNT - the path used for authentication with the selected mechanism. Use it when the authentication mechanism is bound in a non-default location, as well as for authentication methods that also accept a user-password pair, e.g. ldap.
 * CASCB_VAULT_FILE - Path to properties file that will be scanned for above variables
 
 Each of the variables is supported with either `CASCB_` prefix as indicated in

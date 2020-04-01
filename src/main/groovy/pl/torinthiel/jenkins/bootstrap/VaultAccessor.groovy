@@ -82,7 +82,7 @@ class VaultAccessor {
 	}
 
 	private authenticateUser(VaultConfig config, String username, String password) {
-		String mount = configVars.get(VAULT_MOUNT).orElse("userpass")
+		String mount = configVars.get(VAULT_MOUNT).orElse('userpass')
 		String token = vault.auth().loginByUserPass(username, password, mount).getAuthClientToken()
 		config.token(token).build()
 	}
@@ -92,7 +92,7 @@ class VaultAccessor {
 	}
 
 	private authenticateAppRole(VaultConfig config, String approle, String secret) {
-		String mount = configVars.get(VAULT_MOUNT).orElse("approle")
+		String mount = configVars.get(VAULT_MOUNT).orElse('approle')
 		String token = vault.auth().loginByAppRole(mount, approle, secret).getAuthClientToken()
 		config.token(token).build()
 	}
@@ -103,9 +103,9 @@ class VaultAccessor {
 		authenticateAppRole(config, approle, secret)
 	}
 
-	void readVariables(VaultConfig config) {
+	private readVariables(VaultConfig config) {
 		def paths = getOrThrow(VAULT_PATHS).split(",")
-		paths.collect{vault.logical().read(it).getData()}.each{current ->
+		paths.collect{vault.logical().read(it).data}.each{current ->
 			current.each{key, newValue ->
 				values.compute(key, {_, prevValue ->
 					if (newValue && newValue.startsWith('(+),') && key in VaultConfigKey.MERGABLE_KEYS) {
@@ -123,7 +123,7 @@ class VaultAccessor {
 	}
 
 	String getValue(VaultConfigKey key) {
-		values.containsKey(key.path) ? values.get(key.path) : key.defaultValue
+		values.containsKey(key.path) ? values[key.path] : key.defaultValue
 	}
 
 	private String getOrThrow(Configs configName) {

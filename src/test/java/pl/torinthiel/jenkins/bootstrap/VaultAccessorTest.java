@@ -236,7 +236,7 @@ class VaultAccessorLoginTest {
 	}
 
 	@Test
-	void shouldLogInAsUserWithPAthIfPossible() throws VaultException {
+	void shouldLogInAsUserWithPathIfPossible() throws VaultException {
 		config.addMapping(Configs.VAULT_USER, "username");
 		config.addMapping(Configs.VAULT_PW, "password");
 		config.addMapping(Configs.VAULT_MOUNT, "somepath");
