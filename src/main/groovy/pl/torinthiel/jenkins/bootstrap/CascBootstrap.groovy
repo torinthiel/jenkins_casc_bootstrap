@@ -10,12 +10,13 @@ public class CascBootstrap {
 
 	public main() {
 		def config = new ConfigRetriever()
+		def jenkins = Jenkins.get()
 
-		VaultAccessor accessor = new VaultAccessor(config)
+		VaultAccessor accessor = new VaultAccessor(config, jenkins)
 		accessor.configureVault()
 		log.log(INFO, "Connected to vault")
 
-		CredentialUpdater updater = new CredentialUpdater(Jenkins.get(), accessor)
+		CredentialUpdater updater = new CredentialUpdater(jenkins, accessor)
 		updater.updateCredentials()
 		log.log(INFO, "Configured credentials")
 

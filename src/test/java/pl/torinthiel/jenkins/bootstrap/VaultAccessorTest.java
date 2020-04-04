@@ -47,7 +47,7 @@ public class VaultAccessorTest {
 
 	@Test
 	void shouldCreateAndConfigure() {
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 	}
 
@@ -57,7 +57,7 @@ public class VaultAccessorTest {
 		resultsMap.put("cascb_ssh_key", "A_long_ssh_key");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(resultsMap);
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
@@ -70,7 +70,7 @@ public class VaultAccessorTest {
 		resultsMap.put("cascb_ssh_key", "A_long_ssh_key");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(resultsMap);
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
@@ -91,7 +91,7 @@ public class VaultAccessorTest {
 		when(vault.logical().read("secret/jenkins/correct").getData()).thenReturn(resultsMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/correct");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String retVal = acc.getValue(VaultConfigKey.SSH_KEY);
@@ -103,7 +103,7 @@ public class VaultAccessorTest {
 		config.removeMapping(Configs.VAULT_URL);
 
 		Assertions.assertThrows(IllegalArgumentException.class, (Executable) () -> {
-				VaultAccessor acc = new VaultAccessor(config, factory);
+				VaultAccessor acc = new VaultAccessor(config, factory, null);
 				acc.configureVault();
 			}, "CASCB_VAULT_URL is not provided"
 		);
@@ -119,7 +119,7 @@ public class VaultAccessorTest {
 		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
@@ -139,7 +139,7 @@ public class VaultAccessorTest {
 		when(vault.logical().read("secret/jenkins/supplement").getData()).thenReturn(secondMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/config,secret/jenkins/supplement");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String firstVal = acc.getValue(VaultConfigKey.SSH_KEY);
@@ -152,7 +152,7 @@ public class VaultAccessorTest {
 	void shouldThrowErrorIfRequiredSettingMissing() throws VaultException {
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(new HashMap<>());
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		Assertions.assertThrows(IllegalArgumentException.class, (Executable) () -> {
@@ -165,7 +165,7 @@ public class VaultAccessorTest {
 	void shouldReturnDefaultValueIfMissing() throws VaultException {
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(new HashMap<>());
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String value = acc.getValue(VaultConfigKey.SSH_ID);
@@ -186,7 +186,7 @@ public class VaultAccessorTest {
 		when(vault.logical().read("secret/jenkins/second").getData()).thenReturn(secondMap);
 		config.addMapping(Configs.VAULT_PATHS, "secret/jenkins/skipped,secret/jenkins/first,secret/jenkins/missing,secret/jenkins/second");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String value = acc.getValue(VaultConfigKey.REPO_DIRECTORIES);
@@ -199,7 +199,7 @@ public class VaultAccessorTest {
 		resultsMap.put("cascb_repo_directories", "(+),correct_value");
 		when(vault.logical().read("secret/jenkins/config").getData()).thenReturn(resultsMap);
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		String retVal = acc.getValue(VaultConfigKey.REPO_DIRECTORIES);
@@ -229,7 +229,7 @@ class VaultAccessorLoginTest {
 		config.addMapping(Configs.VAULT_USER, "username");
 		config.addMapping(Configs.VAULT_PW, "password");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth()).loginByUserPass(eq("username"), eq("password"), anyString());
@@ -241,7 +241,7 @@ class VaultAccessorLoginTest {
 		config.addMapping(Configs.VAULT_PW, "password");
 		config.addMapping(Configs.VAULT_MOUNT, "somepath");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth()).loginByUserPass("username", "password", "somepath");
@@ -251,7 +251,7 @@ class VaultAccessorLoginTest {
 	void shouldNotLogInAsUserIfUserMissing() throws VaultException {
 		config.addMapping(Configs.VAULT_PW, "password");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth(), times(0)).loginByUserPass(anyString(), anyString(), anyString());
@@ -259,7 +259,7 @@ class VaultAccessorLoginTest {
 
 	@Test
 	void shouldNotLogInAsUserIfPasswordMissing() throws VaultException {
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth(), times(0)).loginByUserPass(anyString(), anyString(), anyString());
@@ -270,7 +270,7 @@ class VaultAccessorLoginTest {
 		String token = "some_would_be_token";
 		config.addMapping(Configs.VAULT_TOKEN, token);
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		assertNotNull(usedConfig);
@@ -282,7 +282,7 @@ class VaultAccessorLoginTest {
 		config.addMapping(Configs.VAULT_APPROLE, "approle");
 		config.addMapping(Configs.VAULT_APPROLE_SECRET, "secret");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth()).loginByAppRole(anyString(), eq("approle"), eq("secret"));
@@ -294,7 +294,7 @@ class VaultAccessorLoginTest {
 		config.addMapping(Configs.VAULT_APPROLE_SECRET, "secret");
 		config.addMapping(Configs.VAULT_MOUNT, "otherpath");
 
-		VaultAccessor acc = new VaultAccessor(config, factory);
+		VaultAccessor acc = new VaultAccessor(config, factory, null);
 		acc.configureVault();
 
 		verify(vault.auth()).loginByAppRole("otherpath", "approle", "secret");

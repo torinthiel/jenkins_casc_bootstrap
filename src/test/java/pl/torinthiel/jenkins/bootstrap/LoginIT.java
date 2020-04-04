@@ -8,10 +8,16 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rnorth.ducttape.ratelimits.RateLimiter;
+import org.rnorth.ducttape.ratelimits.RateLimiterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.rnorth.ducttape.unreliables.Unreliables.retryUntilTrue;
+import static org.testcontainers.containers.wait.strategy.Wait.forLogMessage;
 
 @Testcontainers
 public class LoginIT extends AbstractIT {
@@ -76,6 +82,42 @@ public class LoginIT extends AbstractIT {
 		start();
 
 		assertUserExists("admin", "password");
+	}
+
+	@Test
+	public void shouldLoginViaAppRoleWrappedWithCorrectPath() throws Exception {
+		String result = runCommandInVault("vault", "write", "-force", "-wrap-ttl=10m", "auth/approle/role/jenkins_role/secret-id");
+		String wrappingToken = extractFieldFromResponse("wrapping_token", result);
+
+		jenkins.withEnv("CASCB_VAULT_APPROLE", "custom_approle_id");
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET_WRAPPED", wrappingToken);
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET_WRAPPED_PATH", "auth/approle/role/jenkins_role/secret-id");
+
+		start();
+
+		assertUserExists("admin", "password");
+	}
+
+	@Test
+	public void shouldNotStartWithIncorrectPath() throws Exception {
+		String result = runCommandInVault("vault", "write", "-force", "-wrap-ttl=10m", "auth/approle/role/jenkins_role/secret-id");
+		String wrappingToken = extractFieldFromResponse("wrapping_token", result);
+
+		jenkins.withEnv("CASCB_VAULT_APPROLE", "custom_approle_id");
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET_WRAPPED", wrappingToken);
+		jenkins.withEnv("CASCB_VAULT_APPROLE_SECRET_WRAPPED_PATH", "/foo/incorrect/path");
+		jenkins.waitingFor(forLogMessage(".*SECURITY ERROR.*", 1));
+
+		start();
+
+		RateLimiter limit = RateLimiterBuilder .newBuilder()
+				.withConstantThroughput()
+				.withRate(2, SECONDS)
+				.build();
+
+		retryUntilTrue(30, SECONDS,
+				() -> limit.getWhenReady(() -> !jenkins.isRunning())
+		);
 	}
 
 	private String extractFieldFromResponse(String field, String response) {

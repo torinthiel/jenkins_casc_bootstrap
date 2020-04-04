@@ -3,8 +3,12 @@ package pl.torinthiel.jenkins.bootstrap
 import com.bettercloud.vault.Vault
 import com.bettercloud.vault.VaultConfig
 import static Configs.*
+import static java.util.logging.Level.SEVERE
+import jenkins.model.Jenkins;
 
 import java.util.function.Function
+import java.util.logging.Level
+import java.util.logging.Logger
 
 enum VaultConfigKey {
 	SSH_USER,
@@ -40,18 +44,21 @@ enum VaultConfigKey {
 }
 
 class VaultAccessor {
+	private Logger log = Logger.getLogger(getClass().name)
 	private Function<VaultConfig, Vault> vaultFactory
-	private Vault vault
 	private Retriever configVars
+	private Jenkins jenkins
+	private Vault vault
 	private Map<String, String> values = new HashMap<>()
 
-	VaultAccessor(Retriever configVars) {
-		this(configVars, new DefaultVaultFactory())
+	VaultAccessor(Retriever configVars, Jenkins jenkins) {
+		this(configVars, new DefaultVaultFactory(), jenkins)
 	}
 
-	VaultAccessor(Retriever configVars, Function<VaultConfig, Vault> vaultFactory) {
+	VaultAccessor(Retriever configVars, Function<VaultConfig, Vault> vaultFactory, Jenkins jenkins) {
 		this.configVars = configVars
 		this.vaultFactory = vaultFactory
+		this.jenkins = jenkins
 	}
 
 	void configureVault() {
@@ -59,6 +66,7 @@ class VaultAccessor {
 		VaultConfig config = new VaultConfig()
 			.address(vaultUrl)
 			.putSecretsEngineVersionForPath('sys/wrapping/unwrap/', '1')
+			.putSecretsEngineVersionForPath('sys/wrapping/lookup/', '1')
 			.engineVersion(2)
 			.build()
 
@@ -98,6 +106,7 @@ class VaultAccessor {
 	}
 
 	private authenticateWrappedAppRole(VaultConfig config, String approle, String wrappingToken) {
+		configVars.get(VAULT_APPROLE_SECRET_WRAPPED_PATH).ifPresent(this.&validateWrappingTokenPath.curry(wrappingToken))
 		config.token(wrappingToken).build()
 		String secret = vault.logical().write('sys/wrapping/unwrap', null).data['secret_id']
 		authenticateAppRole(config, approle, secret)
@@ -128,6 +137,22 @@ class VaultAccessor {
 
 	private String getOrThrow(Configs configName) {
 		configVars.get(configName).orElseThrow({new IllegalArgumentException("CASCB_${configName} not provided")})
+	}
+
+	private void validateWrappingTokenPath(String wrappingToken, String expectedPrefix) {
+		String path = vault.logical().write('sys/wrapping/lookup', [token: wrappingToken]).data['creation_path']
+		if (!path.startsWith(expectedPrefix)) {
+			log.log(SEVERE, '#'*80)
+			log.log(SEVERE, 'SECURITY ERROR')
+			log.log(SEVERE, 'The Hashicorp Vault wrapping token was issued from unexpected path prefix')
+			log.log(SEVERE, 'This may indicate misconfiguration, but it may also indicate that')
+			log.log(SEVERE, 'the real response was intercepted, read and wrapped again.')
+			log.log(SEVERE, 'Because of possible risk the application will be stopped')
+			log.log(SEVERE, 'Expected path prefix: ' + expectedPrefix)
+			log.log(SEVERE, 'Actual path: ' + path)
+			log.log(SEVERE, '#'*80)
+			jenkins.doSafeExit()
+		}
 	}
 }
 

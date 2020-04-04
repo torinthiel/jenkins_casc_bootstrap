@@ -65,6 +65,7 @@ The following configuration variables are supported:
 * CASCB_VAULT_APPROLE - The Vault application role ID used to authenticate
 * CASCB_VAULT_APPROLE_SECRET - The Vault application role secret ID used to authenticate
 * CASCB_VAULT_APPROLE_SECRET_WRAPPED - The wrapping token that can be used to retrieve secret ID
+* CASCB_VAULT_APPROLE_SECRET_WRAPPED_PATH - If passed, the wrapping token's issue path will be checked
 * CASCB_VAULT_PATHS - Comma-separated list of paths from which plugin should retrieve configuration
 * CASCB_VAULT_MOUNT - the path used for authentication with the selected mechanism. Use it when the authentication mechanism is bound in a non-default location, as well as for authentication methods that also accept a user-password pair, e.g. ldap.
 * CASCB_VAULT_FILE - Path to properties file that will be scanned for above variables
@@ -82,6 +83,11 @@ It's possible not to pass the secret ID directly, but instead use Vault's respon
 to wrap the response with secret ID and pass it using `CASCB_VAULT_APPROLE_SECRET_WRAPPED`.
 The value of this variable will be passed to Vault for unwrapping. It's expected that the unwrapped response
 contains the key `secret_id`, and the value of this key is further used in place of `CASCB_VAULT_APPROLE_SECRET`.
+If the variable `CASCB_VAULT_APPROLE_SECRET_WRAPPED_PATH` is passed, along with
+`CASCB_VAULT_APPROLE_SECRET_WRAPPED`, the path that issued the wrapping token will be checked
+and has to start with the value of `CASCB_VAULT_APPROLE_SECRET_WRAPPED_PATH`. According to Hashicorp's
+[recommendations](https://www.vaultproject.io/docs/concepts/response-wrapping/#response-wrapping-token-validation)
+failure to verify might mean a security incidend and as such causes Jenkins to be stopped immediately.
 
 In case a variable is present in several places the following precedence
 applies, from least important:
