@@ -85,8 +85,7 @@ public class AbstractIT {
 	protected void prepareJenkinsContainer() {
 		WaitAllStrategy combined = new WaitAllStrategy()
 			.withStrategy(forLogMessage(".*Jenkins is fully up and running.*", 1))
-			// Accept any job with 'config' in name
-			.withStrategy(forLogMessage(".*config[a-zA-Z]* #[0-9]+ main build action completed: SUCCESS.*", 1))
+			.withStrategy(forLogMessage(".*Configuration job finished successfully\n", 1))
 			;
 
 		jenkins = new GenericContainer<>(new ImageFromDockerfile().withDockerfile(Paths.get("Dockerfile").toAbsolutePath()))

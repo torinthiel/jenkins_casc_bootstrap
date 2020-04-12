@@ -56,6 +56,7 @@ class ConfigJobCreator {
 					def jenkins = jenkins.model.Jenkins.get()
 					def jcacPlugin = jenkins.getExtensionList(io.jenkins.plugins.casc.ConfigurationAsCode.class).first()
 					jcacPlugin.configure("\${jenkins.rootDir}/$CONFIG_SUBDIR")
+					java.util.logging.Logger.getLogger(getClass().name).log(java.util.logging.Level.INFO, "Configuration job finished successfully")
 				'''.stripIndent())
 			}
 		}
