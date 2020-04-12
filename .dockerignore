@@ -1,6 +1,7 @@
 src/test
 /target/
 .git
+.*.swp
 
 # Eclipse project files
 .project
