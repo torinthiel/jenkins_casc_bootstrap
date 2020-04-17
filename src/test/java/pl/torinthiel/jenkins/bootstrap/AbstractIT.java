@@ -29,7 +29,7 @@ public class AbstractIT {
 
 	private static final String DOCKERFILE = "itest/Dockerfile";
 	private static final int SSH_PORT = 22;
-	private static final String VAULT_CONTAINER = "vault:1.3.4";
+	private static final String VAULT_CONTAINER = "vault:1.4.0";
 	private static final int VAULT_PORT = 8200;
 	protected static final int JENKINS_PORT = 8080;
 
