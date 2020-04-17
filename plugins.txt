@@ -4,14 +4,14 @@ antisamy-markup-formatter:2.0
 apache-httpcomponents-client-4-api:4.5.10-2.0
 authentication-tokens:1.3
 bouncycastle-api:2.18
-branch-api:2.5.5
+branch-api:2.5.6
 build-timeout:1.19.1
 cloudbees-folder:6.12
 command-launcher:1.4
 configuration-as-code-groovy:1.1
-configuration-as-code:1.36
+configuration-as-code:1.39
 credentials-binding:1.21
-credentials:2.3.5
+credentials:2.3.7
 display-url-api:2.3.2
 docker-commons:1.16
 docker-workflow:1.23
@@ -20,7 +20,7 @@ email-ext:2.69
 git-client:3.2.1
 git-server:1.9
 git:4.2.2
-github-api:1.110
+github-api:1.111
 github-branch-source:2.6.0
 github:1.29.5
 gradle:1.36
@@ -33,7 +33,7 @@ job-dsl:1.77
 jquery-detached:1.2.1
 jsch:0.1.55.2
 junit:1.28
-ldap:1.22
+ldap:1.23
 lockable-resources:2.7
 mailer:1.32
 mapdb-api:1.0.9.0
@@ -62,9 +62,9 @@ ssh-credentials:1.18.1
 ssh-slaves:1.31.2
 structs:1.20
 subversion:2.13.1
-timestamper:1.11.2
+timestamper:1.11.3
 token-macro:2.12
-trilead-api:1.0.6
+trilead-api:1.0.5
 workflow-aggregator:2.6
 workflow-api:2.40
 workflow-basic-steps:2.19
@@ -73,7 +73,7 @@ workflow-cps:2.80
 workflow-durable-task-step:2.35
 workflow-job:2.38
 workflow-multibranch:2.21
-workflow-scm-step:2.10
+workflow-scm-step:2.11
 workflow-step-api:2.22
 workflow-support:3.4
 ws-cleanup:0.38
