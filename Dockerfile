@@ -1,5 +1,5 @@
 # As the source files are split, we need a second image to combine them into a single script
-FROM alpine:3.11.3 AS builder
+FROM alpine:3.11.5 AS builder
 
 # Prepare work directory
 RUN mkdir -p /tmp/configuration_as_code/src

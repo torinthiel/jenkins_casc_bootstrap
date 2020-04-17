@@ -1,5 +1,5 @@
 # A container designed to host a simple, hardcoded git repostory
-FROM alpine:3.11.3
+FROM alpine:3.11.5
 
 # Install necessary software
 RUN apk add git openssh
