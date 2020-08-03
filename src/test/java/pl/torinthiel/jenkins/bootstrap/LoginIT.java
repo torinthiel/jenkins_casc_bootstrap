@@ -110,7 +110,7 @@ public class LoginIT extends AbstractIT {
 
 		start();
 
-		RateLimiter limit = RateLimiterBuilder .newBuilder()
+		RateLimiter limit = RateLimiterBuilder.newBuilder()
 				.withConstantThroughput()
 				.withRate(2, SECONDS)
 				.build();
