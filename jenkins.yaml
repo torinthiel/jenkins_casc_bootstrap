@@ -77,7 +77,7 @@ unclassified:
     useSsl: false
   pollSCM:
     pollingThreadCount: 10
-  timestamperConfig:
+  timestamper:
     allPipelines: false
     elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
     systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
