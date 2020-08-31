@@ -45,11 +45,14 @@ Later the scripts sets up and schedules a job that will clone the selected
 repository, assemble configuration into the `$JENKINS_HOME` folder and apply it
 to the running instance.
 
-This process ensures that
+This process ensures that:
+
 a) There are no configuration parts present in the image, everything comes in
    (directly or indirectly) via environment variables.
+
 b) The configuration process is repeatable - user can re-run the configuration
    job to revert to stored configuration, or periodically
+
 c) The configuration is modular, that is an organization can have global
    configuration for all it's instances, with some more specific overrides.
 
