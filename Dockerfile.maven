@@ -1,0 +1,14 @@
+# Several preparations for maven that cannot be done by docker-compose
+# Used only by docker-compose.test.yml
+FROM maven:3.6.2-jdk-8
+
+RUN useradd -m maven \
+	&& mkdir -p /home/maven/src /home/maven/.m2/repository \
+	&& chown maven:maven /home/maven/src /home/maven/.m2 /home/maven/.m2/repository
+
+# Don't work as root
+USER maven
+WORKDIR /home/maven/src
+ENV MAVEN_CONFIG=/home/maven/.m2
+
+VOLUME /home/maven/.m2

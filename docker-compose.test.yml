@@ -1,0 +1,49 @@
+# Used by automated tests on Docker Hub
+# See https://docs.docker.com/docker-hub/builds/automated-testing/
+
+version: '3.7'
+
+services:
+    sut:
+        # Main tests, only thing directly executed by Docker Hub
+        build:
+            context: .
+            dockerfile: Dockerfile.maven
+        environment:
+            DOCKER_TLS_VERIFY: 1
+            DOCKER_CERT_PATH: /certs/client
+            DOCKER_HOST: tcp://docker:2376/
+        volumes:
+        - ".:/home/maven/src"
+        - "maven-repo:/home/maven/.m2/repository"
+        - "docker-client-certs:/certs/client"
+        command: mvn clean verify
+        depends_on:
+        - docker
+
+    docker:
+        # The scope of tests requires having access to docker
+        image: docker:18.09.9-dind
+        environment:
+          DOCKER_TLS_CERTDIR: /certs
+        volumes:
+        - "docker-client-certs:/certs/client"
+        - "docker-var:/var/lib/docker"
+        privileged: true
+
+    docker-debug:
+        # Not used by the tests themselves, but useful if you need a docker client.
+        # The image is a subset of the dind one, so won't consume more diskspace
+        # nor bandwidth.
+        image: docker:18.09.9
+        environment:
+            DOCKER_TLS_CERTDIR: /certs
+        volumes:
+        - "docker-client-certs:/certs/client"
+        depends_on:
+        - docker
+
+volumes:
+    maven-repo:
+    docker-client-certs:
+    docker-var:
